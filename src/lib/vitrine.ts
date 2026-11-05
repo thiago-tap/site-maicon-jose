@@ -1,4 +1,5 @@
 import { fallback } from '../data/fallback'
+import { filmesFallback, type FilmeVitrine } from '../data/filmes'
 
 /** Subconjunto do JSON público GET /api/site-vitrine/:slug usado nesta landing. */
 export type Vitrine = {
@@ -58,6 +59,7 @@ export type Vitrine = {
     instagram?: { usuario?: string; url?: string }
     email?: string
   }
+  filmes?: FilmeVitrine[]
 }
 
 /**
@@ -90,6 +92,7 @@ function mesclarComFallback(dados: Vitrine): Vitrine {
     pacotes: dados.pacotes?.length ? dados.pacotes : fallback.pacotes,
     extras: dados.extras?.length ? dados.extras : fallback.extras,
     depoimentos: dados.depoimentos?.length ? dados.depoimentos : fallback.depoimentos,
+    filmes: dados.filmes?.length ? dados.filmes : filmesFallback,
     contato: {
       whatsapp: { ...fallback.contato?.whatsapp, ...dados.contato?.whatsapp },
       instagram: { ...fallback.contato?.instagram, ...dados.contato?.instagram },
