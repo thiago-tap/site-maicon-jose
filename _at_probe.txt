@@ -1,0 +1,1 @@
+@/tmp/site-maicon-jose/pnpm-lock.yaml
