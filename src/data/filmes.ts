@@ -1,30 +1,41 @@
 /**
- * Showreel — fica no Git até o painel ter campo de vídeo.
- * Troque título, capa e link quando o Maicon enviar os filmes dele.
+ * Fallback local — a fonte de verdade é a vitrine (`filmes` no painel).
+ * Sem itens na vitrine, a seção some no site.
  */
-export type Filme = {
+export type FilmeVitrine = {
   id: string
   titulo: string
-  /** URL do YouTube / Vimeo / página do filme */
+  youtubeId: string
   url: string
-  /** Capa (URL absoluta ou caminho em /public) — opcional */
-  capa?: string
+  destaque?: boolean
+  capa?: {
+    url?: string
+    alt?: string
+    fontesAoVivo?: {
+      base?: { src: string; srcset?: string }
+      computador?: { src: string; srcset?: string }
+    }
+  }
 }
 
-export const filmes: Filme[] = [
-  {
-    id: 'filme-1',
-    titulo: 'Filme de casamento',
-    url: '#filmes',
-  },
-  {
-    id: 'filme-2',
-    titulo: 'Ensaio ao ar livre',
-    url: '#filmes',
-  },
-  {
-    id: 'filme-3',
-    titulo: 'Cerimônia',
-    url: '#filmes',
-  },
-]
+/** Sem placeholders falsos: vazio até o painel devolver filmes. */
+export const filmesFallback: FilmeVitrine[] = []
+
+export function urlDaCapa(filme: FilmeVitrine): string | undefined {
+  const capa = filme.capa
+  if (!capa) return undefined
+  const aoVivo = capa.fontesAoVivo?.computador?.src || capa.fontesAoVivo?.base?.src
+  if (aoVivo) return aoVivo
+  if (capa.url && capa.url !== '.') return capa.url
+  return undefined
+}
+
+export function escolherDestaque(filmes: FilmeVitrine[]): FilmeVitrine | undefined {
+  if (!filmes.length) return undefined
+  return filmes.find((f) => f.destaque) ?? filmes[0]
+}
+
+export function filmesDaGrade(filmes: FilmeVitrine[], destaque?: FilmeVitrine): FilmeVitrine[] {
+  if (!destaque) return filmes
+  return filmes.filter((f) => f.id !== destaque.id)
+}
