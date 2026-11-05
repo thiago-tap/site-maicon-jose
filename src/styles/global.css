@@ -468,12 +468,14 @@ body.cinema-aberto {
 .cinema__dialogo {
   position: relative;
   z-index: 1;
-  width: min(100%, 64rem);
+  /* Quase tela cheia, limitado pela altura (16:9) e pelas laterais */
+  width: min(96vw, calc((100dvh - 7rem) * 16 / 9));
+  max-width: 100%;
 }
 
 .cinema__fechar {
   position: absolute;
-  top: -2.5rem;
+  top: -2.75rem;
   right: 0;
   width: 2.5rem;
   height: 2.5rem;

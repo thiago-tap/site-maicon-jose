@@ -108,7 +108,10 @@ const capaDestaque = destaque ? urlDaCapa(destaque, slugTenant) : undefined
       rel: '0',
       modestbranding: '1',
       iv_load_policy: '3',
-      controls: '1',
+      // Sem barra nativa: menos chrome do YouTube (título/logo ainda podem aparecer no hover/fim).
+      controls: '0',
+      disablekb: '1',
+      cc_load_policy: '0',
       fs: '1',
     })
     return `https://www.youtube-nocookie.com/embed/${encodeURIComponent(youtubeId)}?${params}`
