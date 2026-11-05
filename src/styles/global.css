@@ -333,6 +333,23 @@ a {
   text-align: center;
 }
 
+.filme--destaque {
+  display: block;
+  width: min(100%, 56rem);
+  margin: 0 auto 1.75rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+}
+
+.filme--destaque .filme__capa {
+  aspect-ratio: 16 / 9;
+}
+
 .grade-filmes {
   display: grid;
   gap: 1.25rem;
@@ -347,8 +364,15 @@ a {
 
 .filme {
   display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
   text-decoration: none;
   color: inherit;
+  font: inherit;
+  cursor: pointer;
 }
 
 .filme__capa {
@@ -392,7 +416,7 @@ a {
   height: 3.4rem;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.55);
-  background: rgba(10, 10, 10, 0.45);
+  background: rgba(10, sat, 10, 0.45);
   backdrop-filter: blur(6px);
 }
 
@@ -415,6 +439,86 @@ a {
   text-align: center;
   font-size: 0.85rem;
   color: var(--cinza);
+}
+
+body.cinema-aberto {
+  overflow: hidden;
+}
+
+.cinema[hidden] {
+  display: none !important;
+}
+
+.cinema {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+}
+
+.cinema__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(4px);
+}
+
+.cinema__dialogo {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 64rem);
+}
+
+.cinema__fechar {
+  position: absolute;
+  top: -2.5rem;
+  right: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  background: rgba(10, 10, 10, 0.55);
+  color: var(--creme);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.cinema__palco {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #000;
+  border: 1px solid color-mix(in srgb, var(--ouro) 22%, transparent);
+}
+
+.cinema__palco iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.cinema__titulo {
+  margin: 0.85rem 0 0;
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  color: var(--creme);
+  text-align: center;
+}
+
+.cinema__erro {
+  margin: 0.75rem 0 0;
+  text-align: center;
+  color: var(--cinza);
+  font-size: 0.9rem;
+}
+
+.cinema__erro a {
+  color: var(--ouro);
 }
 
 /* —— Sobre —— */
