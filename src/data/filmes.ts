@@ -22,28 +22,24 @@ export type FilmeVitrine = {
 /** Sem placeholders falsos: vazio até o painel devolver filmes. */
 export const filmesFallback: FilmeVitrine[] = []
 
-const PAINEL_PUBLICO = 'https://painel.estudiosites.com.br'
-
 /**
  * URL da capa para o <img>.
- * `/api/midia/file/...` exige login (403 no browser) — não usar.
- * Prefere fontesAoVivo → derivado público → thumb YouTube.
+ * `/api/midia/file/...` exige login (403). `/api/derivados/...` só depois dos
+ * derivados existirem (senão 404). Enquanto não há `fontesAoVivo`, usa a thumb
+ * pública do YouTube — sempre carrega no browser.
  */
-export function urlDaCapa(filme: FilmeVitrine, slugTenant?: string): string | undefined {
+export function urlDaCapa(filme: FilmeVitrine, _slugTenant?: string): string | undefined {
   const capa = filme.capa
   const aoVivo = capa?.fontesAoVivo?.computador?.src || capa?.fontesAoVivo?.base?.src
   if (aoVivo) return aoVivo
 
-  const arquivo = capa?.arquivo?.trim()
-  if (arquivo && slugTenant && /^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(arquivo)) {
-    return `${PAINEL_PUBLICO}/api/derivados/${encodeURIComponent(slugTenant)}/${encodeURIComponent(arquivo)}`
+  if (filme.youtubeId) {
+    return `https://i.ytimg.com/vi/${encodeURIComponent(filme.youtubeId)}/hqdefault.jpg`
   }
 
   const url = capa?.url?.trim()
-  if (url && url !== '.' && !url.includes('/api/midia/file/')) return url
-
-  if (filme.youtubeId) {
-    return `https://i.ytimg.com/vi/${encodeURIComponent(filme.youtubeId)}/hqdefault.jpg`
+  if (url && url !== '.' && !url.includes('/api/midia/file/') && !url.includes('/api/derivados/')) {
+    return url
   }
   return undefined
 }
