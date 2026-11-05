@@ -1,0 +1,190 @@
+---
+import {
+  escolherDestaque,
+  filmesDaGrade,
+  urlDaCapa,
+  type FilmeVitrine,
+} from '../data/filmes'
+
+type Props = { filmes: FilmeVitrine[] }
+
+const { filmes } = Astro.props
+const destaque = escolherDestaque(filmes)
+const grade = filmesDaGrade(filmes, destaque)
+const capaDestaque = destaque ? urlDaCapa(destaque) : undefined
+---
+
+{
+  destaque ? (
+<section class="filmes" id="filmes" data-filmes-cinema>
+  <div class="container">
+    <p class="rotulo revelar">Portfólio</p>
+    <h2 class="titulo-secao revelar">Nossos filmes</h2>
+    <p class="lead revelar">
+      Cada história é única. Os filmes capturam a essência e a emoção do dia — com ritmo de cinema.
+    </p>
+
+    <button
+      type="button"
+      class="filme filme--destaque revelar"
+      data-filme-abrir
+      data-youtube-id={destaque.youtubeId}
+      data-titulo={destaque.titulo}
+      data-url={destaque.url}
+      aria-label={`Assistir ${destaque.titulo}`}
+    >
+      <div class="filme__capa">
+        {capaDestaque ? <img src={capaDestaque} alt="" loading="lazy" /> : null}
+        <div class="filme__play">
+          <span aria-hidden="true">
+            <svg viewBox="0 0 24 24"><polygon points="8,5 20,12 8,19"></polygon></svg>
+          </span>
+        </div>
+      </div>
+      <p class="filme__titulo">{destaque.titulo}</p>
+    </button>
+
+    {
+      grade.length > 0 ? (
+        <div class="grade-filmes">
+          {grade.map((filme, i) => (
+            <button
+              type="button"
+              class={`filme revelar revelar--${Math.min(i + 1, 3)}`}
+              data-filme-abrir
+              data-youtube-id={filme.youtubeId}
+              data-titulo={filme.titulo}
+              data-url={filme.url}
+              aria-label={`Assistir ${filme.titulo}`}
+            >
+              <div class="filme__capa">
+                {urlDaCapa(filme) ? <img src={urlDaCapa(filme)} alt="" loading="lazy" /> : null}
+                <div class="filme__play">
+                  <span aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><polygon points="8,5 20,12 8,19"></polygon></svg>
+                  </span>
+                </div>
+              </div>
+              <p class="filme__titulo">{filme.titulo}</p>
+            </button>
+          ))}
+        </div>
+      ) : null
+    }
+  </div>
+
+  <div class="cinema" data-cinema hidden>
+    <div class="cinema__backdrop" data-cinema-fechar tabindex="-1"></div>
+    <div
+      class="cinema__dialogo"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Player de filme"
+      data-cinema-dialogo
+    >
+      <button type="button" class="cinema__fechar" data-cinema-fechar aria-label="Fechar">
+        ×
+      </button>
+      <div class="cinema__palco" data-cinema-palco></div>
+      <p class="cinema__titulo" data-cinema-titulo></p>
+      <p class="cinema__erro" data-cinema-erro hidden>
+        Não foi possível carregar o filme.
+        <a data-cinema-escape href="#" target="_blank" rel="noopener noreferrer">Abrir no YouTube</a>
+      </p>
+    </div>
+  </div>
+</section>
+  ) : null
+}
+
+<script>
+  function montarEmbed(youtubeId: string): string {
+    const params = new URLSearchParams({
+      autoplay: '1',
+      playsinline: '1',
+      rel: '0',
+      modestbranding: '1',
+      iv_load_policy: '3',
+      controls: '1',
+      fs: '1',
+    })
+    return `https://www.youtube-nocookie.com/embed/${encodeURIComponent(youtubeId)}?${params}`
+  }
+
+  function iniciar() {
+    const raiz = document.querySelector('[data-filmes-cinema]')
+    if (!(raiz instanceof HTMLElement)) return
+
+    const cinema = raiz.querySelector('[data-cinema]')
+    const palco = raiz.querySelector('[data-cinema-palco]')
+    const tituloEl = raiz.querySelector('[data-cinema-titulo]')
+    const erroEl = raiz.querySelector('[data-cinema-erro]')
+    const escapeEl = raiz.querySelector('[data-cinema-escape]')
+    if (
+      !(cinema instanceof HTMLElement) ||
+      !(palco instanceof HTMLElement) ||
+      !(tituloEl instanceof HTMLElement) ||
+      !(erroEl instanceof HTMLElement) ||
+      !(escapeEl instanceof HTMLAnchorElement)
+    ) {
+      return
+    }
+
+    let ultimoFoco: HTMLElement | null = null
+
+    function fechar() {
+      cinema!.hidden = true
+      document.body.classList.remove('cinema-aberto')
+      palco!.replaceChildren()
+      erroEl!.hidden = true
+      ultimoFoco?.focus()
+      ultimoFoco = null
+    }
+
+    function abrir(botao: HTMLElement) {
+      const youtubeId = botao.dataset.youtubeId?.trim()
+      const titulo = botao.dataset.titulo?.trim() || 'Filme'
+      const url = botao.dataset.url?.trim() || '#'
+      if (!youtubeId) return
+
+      ultimoFoco = botao
+      tituloEl!.textContent = titulo
+      escapeEl!.href = url
+      erroEl!.hidden = true
+      palco!.replaceChildren()
+
+      const iframe = document.createElement('iframe')
+      iframe.src = montarEmbed(youtubeId)
+      iframe.title = titulo
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+      iframe.allowFullscreen = true
+      iframe.referrerPolicy = 'strict-origin-when-cross-origin'
+      iframe.addEventListener('error', () => {
+        erroEl!.hidden = false
+      })
+      palco!.append(iframe)
+
+      cinema!.hidden = false
+      document.body.classList.add('cinema-aberto')
+      const fecharBtn = cinema!.querySelector('.cinema__fechar')
+      if (fecharBtn instanceof HTMLElement) fecharBtn.focus()
+    }
+
+    raiz.querySelectorAll('[data-filme-abrir]').forEach((el) => {
+      el.addEventListener('click', () => {
+        if (el instanceof HTMLElement) abrir(el)
+      })
+    })
+
+    cinema.querySelectorAll('[data-cinema-fechar]').forEach((el) => {
+      el.addEventListener('click', fechar)
+    })
+
+    document.addEventListener('keydown', (evento) => {
+      if (evento.key === 'Escape' && !cinema.hidden) fechar()
+    })
+  }
+
+  iniciar()
+  document.addEventListener('astro:page-load', iniciar)
+</script>
