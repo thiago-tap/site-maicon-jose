@@ -1,0 +1,49 @@
+---
+import VoltarAoTopo from './VoltarAoTopo.astro'
+import WhatsAppFlutuante from './WhatsAppFlutuante.astro'
+
+type Props = {
+  whatsapp?: string | null
+}
+
+const { whatsapp } = Astro.props
+---
+
+<VoltarAoTopo />
+{whatsapp ? <WhatsAppFlutuante href={whatsapp} /> : null}
+
+<script>
+  document.documentElement.classList.add('js')
+
+  function ligarFlutuante(seletor: string, aoClicar?: () => void) {
+    const botao = document.querySelector<HTMLElement>(seletor)
+    if (!botao) return
+
+    const alvo = document.querySelector('[data-hero]') ?? document.querySelector('main h1')
+    // Aparece depois do hero (ou de um pouco de scroll em páginas curtas) e permanece até o fim.
+    let passou = window.scrollY > 80
+
+    function atualizar() {
+      const visivel = passou || window.scrollY > 80
+      botao!.toggleAttribute('data-visivel', visivel)
+      botao!.inert = !visivel
+    }
+
+    if (alvo) {
+      new IntersectionObserver(([entrada]) => {
+        passou = !entrada.isIntersecting && entrada.boundingClientRect.bottom <= 0
+        atualizar()
+      }).observe(alvo)
+    }
+
+    window.addEventListener('scroll', atualizar, { passive: true })
+
+    if (aoClicar) botao.addEventListener('click', aoClicar)
+    atualizar()
+  }
+
+  ligarFlutuante('[data-voltar-topo]', () => {
+    window.scrollTo({ top: 0 })
+  })
+  ligarFlutuante('[data-flutuante]')
+</script>
