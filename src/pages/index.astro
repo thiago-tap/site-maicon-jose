@@ -1,7 +1,8 @@
 ---
 import Base from '../layouts/Base.astro'
+import FilmesCinema from '../components/FilmesCinema.astro'
 import Flutuantes from '../components/Flutuantes.astro'
-import { filmes } from '../data/filmes'
+import { filmesFallback } from '../data/filmes'
 import { iniciais } from '../lib/format'
 import {
   buscarVitrine,
@@ -41,7 +42,7 @@ const instagramUrl =
   dados.contato?.instagram?.url?.trim() ||
   (instagramUsuario ? `https://www.instagram.com/${instagramUsuario}/` : '')
 const monograma = iniciais(marca)
-const filmesComLink = filmes.some((f) => f.url && !f.url.startsWith('#'))
+const filmes = dados.filmes?.length ? dados.filmes : filmesFallback
 ---
 
 <Base titulo={`${marca} — ${especialidade}`} descricao={descricao}>
@@ -99,45 +100,7 @@ const filmesComLink = filmes.some((f) => f.url && !f.url.startsWith('#'))
       </div>
     </section>
 
-    <section class="filmes" id="filmes">
-      <div class="container">
-        <p class="rotulo revelar">Portfólio</p>
-        <h2 class="titulo-secao revelar">Nossos filmes</h2>
-        <p class="lead revelar">
-          Cada história é única. Os filmes capturam a essência e a emoção do dia — com ritmo de cinema.
-        </p>
-        <div class="grade-filmes">
-          {
-            filmes.map((filme, i) => (
-              <a
-                class={`filme revelar revelar--${Math.min(i, 3)}`}
-                href={filme.url}
-                target={filme.url.startsWith('http') ? '_blank' : undefined}
-                rel={filme.url.startsWith('http') ? 'noopener noreferrer' : undefined}
-              >
-                <div class="filme__capa">
-                  {filme.capa ? <img src={filme.capa} alt="" loading="lazy" /> : null}
-                  <div class="filme__play">
-                    <span aria-hidden="true">
-                      <svg viewBox="0 0 24 24"><polygon points="8,5 20,12 8,19"></polygon></svg>
-                    </span>
-                  </div>
-                </div>
-                <p class="filme__titulo">{filme.titulo}</p>
-              </a>
-            ))
-          }
-        </div>
-        {
-          !filmesComLink ? (
-            <p class="filme__aviso">
-              Links e capas dos filmes do Maicon entram em <code>src/data/filmes.ts</code> neste
-              repositório.
-            </p>
-          ) : null
-        }
-      </div>
-    </section>
+    <FilmesCinema filmes={filmes} />
 
     <section class="sobre" id="sobre">
       <div class="container sobre__grid">
