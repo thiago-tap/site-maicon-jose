@@ -4,7 +4,9 @@ on:
   push:
     paths:
       - 'lock-parts/**'
+      - '.github/workflows/assemble-lock.yml'
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -14,22 +16,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Assemble lockfile from base64 parts
+      - name: Fetch and write pnpm-lock.yaml
+        env:
+          LOCK_URL: 'https://raw.githubusercontent.com/thiago-tap/plataforma-fotografos/main/.tmp-maicon-jose-pnpm-lock.yaml?token=BRK5HRPDHLJJ3SUR5CGMMGTK5SUGJAVPNFXHG5DBNRWGC5DJN5XF62LE2MAAAAAE477VNUFRNFXHG5DBNRWGC5DJN5XF65DZOBS32U3DN5YGKZCJNZ2GKZ3SMF2GS33OJFXHG5DBNRWGC5DJN5XA'
         run: |
           set -euo pipefail
-          python3 <<'PY'
-          import base64, hashlib, json
+          curl -fsSL "$LOCK_URL" -o pnpm-lock.yaml
+          python3 <<'PY2'
+          import hashlib
           from pathlib import Path
-          meta = json.loads(Path('lock-parts/manifest.json').read_text())
-          b64 = ''.join(Path('lock-parts', name).read_text().strip() for name in meta['parts'])
-          raw = base64.b64decode(b64)
+          raw = Path('pnpm-lock.yaml').read_bytes()
           got = hashlib.sha256(raw).hexdigest()
-          assert got == meta['sha256'], (got, meta['sha256'])
-          assert len(raw) == meta['size'], (len(raw), meta['size'])
-          Path('pnpm-lock.yaml').write_bytes(raw)
-          print('wrote pnpm-lock.yaml', len(raw), got)
-          PY
-      - name: Commit lockfile and remove parts
+          assert len(raw) == 97308, len(raw)
+          assert got == '2884ea96e6ab0320655c9da53f8043bc3018d5fe0efeda9da00fc249d82de69f', got
+          print('ok', len(raw), got)
+          PY2
+      - name: Commit lockfile and cleanup
         run: |
           set -euo pipefail
           rm -rf lock-parts
