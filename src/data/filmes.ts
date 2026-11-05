@@ -10,6 +10,7 @@ export type FilmeVitrine = {
   destaque?: boolean
   capa?: {
     url?: string
+    arquivo?: string
     alt?: string
     fontesAoVivo?: {
       base?: { src: string; srcset?: string }
@@ -21,12 +22,29 @@ export type FilmeVitrine = {
 /** Sem placeholders falsos: vazio até o painel devolver filmes. */
 export const filmesFallback: FilmeVitrine[] = []
 
-export function urlDaCapa(filme: FilmeVitrine): string | undefined {
+const PAINEL_PUBLICO = 'https://painel.estudiosites.com.br'
+
+/**
+ * URL da capa para o <img>.
+ * `/api/midia/file/...` exige login (403 no browser) — não usar.
+ * Prefere fontesAoVivo → derivado público → thumb YouTube.
+ */
+export function urlDaCapa(filme: FilmeVitrine, slugTenant?: string): string | undefined {
   const capa = filme.capa
-  if (!capa) return undefined
-  const aoVivo = capa.fontesAoVivo?.computador?.src || capa.fontesAoVivo?.base?.src
+  const aoVivo = capa?.fontesAoVivo?.computador?.src || capa?.fontesAoVivo?.base?.src
   if (aoVivo) return aoVivo
-  if (capa.url && capa.url !== '.') return capa.url
+
+  const arquivo = capa?.arquivo?.trim()
+  if (arquivo && slugTenant && /^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(arquivo)) {
+    return `${PAINEL_PUBLICO}/api/derivados/${encodeURIComponent(slugTenant)}/${encodeURIComponent(arquivo)}`
+  }
+
+  const url = capa?.url?.trim()
+  if (url && url !== '.' && !url.includes('/api/midia/file/')) return url
+
+  if (filme.youtubeId) {
+    return `https://i.ytimg.com/vi/${encodeURIComponent(filme.youtubeId)}/hqdefault.jpg`
+  }
   return undefined
 }
 
