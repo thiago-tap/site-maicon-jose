@@ -1,0 +1,42 @@
+name: Assemble pnpm-lock
+
+on:
+  push:
+    paths:
+      - 'lock-parts/**'
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assemble lockfile from base64 parts
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import base64, hashlib, json
+          from pathlib import Path
+          meta = json.loads(Path('lock-parts/manifest.json').read_text())
+          b64 = ''.join(Path('lock-parts', name).read_text().strip() for name in meta['parts'])
+          raw = base64.b64decode(b64)
+          got = hashlib.sha256(raw).hexdigest()
+          assert got == meta['sha256'], (got, meta['sha256'])
+          assert len(raw) == meta['size'], (len(raw), meta['size'])
+          Path('pnpm-lock.yaml').write_bytes(raw)
+          print('wrote pnpm-lock.yaml', len(raw), got)
+          PY
+      - name: Commit lockfile and remove parts
+        run: |
+          set -euo pipefail
+          rm -rf lock-parts
+          rm -f .github/workflows/assemble-lock.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git status
+          git commit -m "Replace placeholder with real pnpm-lock.yaml"
+          git push
