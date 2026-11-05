@@ -1,0 +1,9 @@
+# Nome é sobrescrito no deploy: wrangler deploy --name site-<slug>
+name = "site-maicon-jose"
+compatibility_date = "2026-10-01"
+compatibility_flags = ["nodejs_compat"]
+main = "@astrojs/cloudflare/entrypoints/server"
+
+[assets]
+directory = "./dist/client"
+binding = "ASSETS"
