@@ -43,6 +43,7 @@ const instagramUrl =
   (instagramUsuario ? `https://www.instagram.com/${instagramUsuario}/` : '')
 const monograma = iniciais(marca)
 const filmes = dados.filmes?.length ? dados.filmes : filmesFallback
+const slugTenant = dados.tenant?.slug?.trim() || 'maicon-jose'
 ---
 
 <Base titulo={`${marca} — ${especialidade}`} descricao={descricao}>
@@ -100,7 +101,7 @@ const filmes = dados.filmes?.length ? dados.filmes : filmesFallback
       </div>
     </section>
 
-    <FilmesCinema filmes={filmes} />
+    <FilmesCinema filmes={filmes} slugTenant={slugTenant} />
 
     <section class="sobre" id="sobre">
       <div class="container sobre__grid">

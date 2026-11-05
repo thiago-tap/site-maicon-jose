@@ -6,12 +6,12 @@ import {
   type FilmeVitrine,
 } from '../data/filmes'
 
-type Props = { filmes: FilmeVitrine[] }
+type Props = { filmes: FilmeVitrine[]; slugTenant?: string }
 
-const { filmes } = Astro.props
+const { filmes, slugTenant = 'maicon-jose' } = Astro.props
 const destaque = escolherDestaque(filmes)
 const grade = filmesDaGrade(filmes, destaque)
-const capaDestaque = destaque ? urlDaCapa(destaque) : undefined
+const capaDestaque = destaque ? urlDaCapa(destaque, slugTenant) : undefined
 ---
 
 {
@@ -47,7 +47,9 @@ const capaDestaque = destaque ? urlDaCapa(destaque) : undefined
     {
       grade.length > 0 ? (
         <div class="grade-filmes">
-          {grade.map((filme, i) => (
+          {grade.map((filme, i) => {
+            const capa = urlDaCapa(filme, slugTenant)
+            return (
             <button
               type="button"
               class={`filme revelar revelar--${Math.min(i + 1, 3)}`}
@@ -58,7 +60,7 @@ const capaDestaque = destaque ? urlDaCapa(destaque) : undefined
               aria-label={`Assistir ${filme.titulo}`}
             >
               <div class="filme__capa">
-                {urlDaCapa(filme) ? <img src={urlDaCapa(filme)} alt="" loading="lazy" /> : null}
+                {capa ? <img src={capa} alt="" loading="lazy" /> : null}
                 <div class="filme__play">
                   <span aria-hidden="true">
                     <svg viewBox="0 0 24 24"><polygon points="8,5 20,12 8,19"></polygon></svg>
@@ -67,7 +69,8 @@ const capaDestaque = destaque ? urlDaCapa(destaque) : undefined
               </div>
               <p class="filme__titulo">{filme.titulo}</p>
             </button>
-          ))}
+            )
+          })}
         </div>
       ) : null
     }
