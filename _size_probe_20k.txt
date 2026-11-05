@@ -1,0 +1,26 @@
+PROBE_START
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      '@astrojs/cloudflare':
+        specifier: ^14.3.4
+        version: 14.4.2(astro@7.4.2(esbuild@0.28.2)(yaml@2.9.1))(esbuild@0.28.2)(wrangler@4.151.2)(yaml@2.9.1)
+      astro:
+        specifier: ^7.3.5
+        version: 7.4.2(esbuild@0.28.2)(yaml@2.9.1)
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      wrangler:
+        specifier: ^4.149.0
+        version: 4.151.2
+
+# padding to approach 20k
