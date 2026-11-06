@@ -1,0 +1,116 @@
+---
+import Base from '../layouts/Base.astro'
+import FilmesCinema from '../components/FilmesCinema.astro'
+import FilmesVerticais from '../components/FilmesVerticais.astro'
+import Flutuantes from '../components/Flutuantes.astro'
+import { filmesFallback } from '../data/filmes'
+import { buscarVitrine, linkWhatsapp, marcaDoSite } from '../lib/vitrine'
+
+const dados = await buscarVitrine()
+const marca = marcaDoSite(dados)
+const especialidade =
+  dados.inicio?.especialidade?.trim() ||
+  dados.identidade?.especialidade?.trim() ||
+  'Filmagem cinematográfica'
+const descricao = `Filmes de ${marca} — arquivo completo com teasers, casamentos, making of e verticais.`
+const filmes = dados.filmes?.length ? dados.filmes : filmesFallback
+const slugTenant = dados.tenant?.slug?.trim() || 'maicon-jose'
+const whatsapp = linkWhatsapp(dados, 'Olá! Vi o arquivo de filmes no site e gostaria de conversar.')
+const instagramUsuario = dados.contato?.instagram?.usuario?.replace(/^@/, '').trim()
+const instagramUrl =
+  dados.contato?.instagram?.url?.trim() ||
+  (instagramUsuario ? `https://www.instagram.com/${instagramUsuario}/` : '')
+---
+
+<Base titulo={`Filmes — ${marca}`} descricao={descricao}>
+  <header class="nav nav--pagina" data-nav data-solido>
+    <a class="nav__marca" href="/">
+      {marca}
+      <span>{especialidade}</span>
+    </a>
+    <ul class="nav__links">
+      <li><a href="/">Início</a></li>
+      <li><a href="/filmes" aria-current="page">Filmes</a></li>
+      <li><a href="/#pacotes">Investimento</a></li>
+      <li><a href="/#contato">Contato</a></li>
+    </ul>
+  </header>
+
+  <main>
+    <section class="arquivo-intro">
+      <div class="container">
+        <p class="rotulo revelar">Arquivo</p>
+        <h1 class="titulo-secao revelar">Todos os filmes</h1>
+        <p class="lead revelar">
+          Teasers, casamentos, making of e verticais. Filtre e assista — o fechamento continua pelo WhatsApp.
+        </p>
+      </div>
+    </section>
+
+    <FilmesCinema filmes={filmes} slugTenant={slugTenant} modo="arquivo" />
+    <FilmesVerticais filmes={filmes} slugTenant={slugTenant} />
+
+    <section class="cta-final" id="contato">
+      <div class="container">
+        <p class="rotulo revelar">Contato</p>
+        <h2 class="titulo-secao revelar">Gostou de algum filme?</h2>
+        <p class="lead revelar">Me conte a data e o clima que vocês querem. Respondo pelo WhatsApp.</p>
+        <div class="cta-final__acoes revelar">
+          {
+            whatsapp ? (
+              <a class="btn btn--wa" href={whatsapp} target="_blank" rel="noopener noreferrer">
+                Falar no WhatsApp
+              </a>
+            ) : (
+              <a class="btn btn--linha" href="/#contato">
+                Voltar ao início
+              </a>
+            )
+          }
+          <a class="btn btn--linha" href="/">Voltar ao início</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <p class="rodape__marca">{marca}</p>
+    <div class="rodape__links">
+      <a href="/">Início</a>
+      <a href="/filmes">Filmes</a>
+      <a href="/#contato">Contato</a>
+      {
+        instagramUrl ? (
+          <a href={instagramUrl} target="_blank" rel="noopener noreferrer">
+            Instagram
+          </a>
+        ) : null
+      }
+    </div>
+    <p class="rodape__credito">
+      Desenvolvido por:{' '}
+      <a href="https://www.instagram.com/thiagaotap/" target="_blank" rel="noopener noreferrer"
+        >Thiago Albuquerque</a
+      >
+      {' · '}Estúdio Sites
+    </p>
+  </footer>
+
+  <Flutuantes whatsapp={whatsapp} />
+
+  <script>
+    document.documentElement.classList.add('js')
+    const observador = new IntersectionObserver(
+      (entradas) => {
+        for (const entrada of entradas) {
+          if (entrada.isIntersecting) {
+            entrada.target.toggleAttribute('data-visivel', true)
+            observador.unobserve(entrada.target)
+          }
+        }
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -8% 0px' },
+    )
+    document.querySelectorAll('.revelar').forEach((el) => observador.observe(el))
+  </script>
+</Base>
