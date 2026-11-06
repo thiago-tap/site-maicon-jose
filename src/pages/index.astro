@@ -1,6 +1,9 @@
 ---
 import Base from '../layouts/Base.astro'
 import FilmesCinema from '../components/FilmesCinema.astro'
+import FilmesVerticais from '../components/FilmesVerticais.astro'
+import Processo from '../components/Processo.astro'
+import Faq from '../components/Faq.astro'
 import HeroBannerFundo from '../components/HeroBannerFundo.astro'
 import Flutuantes from '../components/Flutuantes.astro'
 import { filmesFallback } from '../data/filmes'
@@ -32,11 +35,16 @@ const sobreTexto =
   dados.sobre?.resumo?.trim() ||
   'Filmes e conteúdos em vídeo com narrativa cinematográfica.'
 const sobreEstilo = dados.sobre?.estilo?.trim()
+const numeros = (dados.sobre?.numeros || []).filter(
+  (n) => Number.isFinite(n.valor) && n.rotulo?.trim(),
+)
 const pacotes = [...(dados.pacotes || [])].sort((a, b) => a.ordem - b.ordem)
 const extras = dados.extras || []
 const depoimentos = [...(dados.depoimentos || [])].sort(
   (a, b) => (a.ordem ?? 0) - (b.ordem ?? 0),
 )
+const etapas = dados.comoFunciona || []
+const faq = dados.faq || []
 const whatsapp = linkWhatsapp(dados)
 const instagramUsuario = dados.contato?.instagram?.usuario?.replace(/^@/, '').trim()
 const instagramUrl =
@@ -55,10 +63,11 @@ const slugTenant = dados.tenant?.slug?.trim() || 'maicon-jose'
     </a>
     <ul class="nav__links">
       <li><a href="#filmes">Filmes</a></li>
+      <li><a href="/filmes">Arquivo</a></li>
+      <li><a href="#processo">Processo</a></li>
       <li><a href="#sobre">Sobre</a></li>
       <li><a href="#pacotes">Investimento</a></li>
-      <li><a href="#extras">Extras</a></li>
-      <li><a href="#depoimentos">Depoimentos</a></li>
+      <li><a href="#faq">FAQ</a></li>
       <li><a href="#contato">Contato</a></li>
     </ul>
   </header>
@@ -103,7 +112,9 @@ const slugTenant = dados.tenant?.slug?.trim() || 'maicon-jose'
       </div>
     </section>
 
-    <FilmesCinema filmes={filmes} slugTenant={slugTenant} />
+    <FilmesCinema filmes={filmes} slugTenant={slugTenant} modo="home" />
+    <FilmesVerticais filmes={filmes} slugTenant={slugTenant} />
+    <Processo etapas={etapas} />
 
     <section class="sobre" id="sobre">
       <div class="container sobre__grid">
@@ -114,6 +125,18 @@ const slugTenant = dados.tenant?.slug?.trim() || 'maicon-jose'
           <div class="sobre__accent revelar"></div>
           <p class="revelar">{sobreTexto}</p>
           {sobreEstilo ? <p class="sobre__estilo revelar">{sobreEstilo}</p> : null}
+          {
+            numeros.length > 0 ? (
+              <ul class="sobre__numeros revelar">
+                {numeros.map((n) => (
+                  <li>
+                    <strong data-contar={n.valor}>{n.valor}</strong>
+                    <span>{n.rotulo}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : null
+          }
         </div>
       </div>
     </section>
@@ -217,6 +240,8 @@ const slugTenant = dados.tenant?.slug?.trim() || 'maicon-jose'
       ) : null
     }
 
+    <Faq perguntas={faq} />
+
     <section class="cta-final" id="contato">
       <div class="container">
         <p class="rotulo revelar">Contato</p>
@@ -252,6 +277,7 @@ const slugTenant = dados.tenant?.slug?.trim() || 'maicon-jose'
     <p class="rodape__marca">{marca}</p>
     <div class="rodape__links">
       <a href="#filmes">Filmes</a>
+      <a href="/filmes">Arquivo</a>
       <a href="#pacotes">Pacotes</a>
       <a href="#contato">Contato</a>
       {
@@ -295,5 +321,32 @@ const slugTenant = dados.tenant?.slug?.trim() || 'maicon-jose'
       { threshold: 0.12, rootMargin: '0px 0px -8% 0px' },
     )
     document.querySelectorAll('.revelar').forEach((el) => observador.observe(el))
+
+    const movimentoReduzido = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const numeros = document.querySelectorAll<HTMLElement>('[data-contar]')
+    if (numeros.length > 0 && !movimentoReduzido && 'IntersectionObserver' in window) {
+      const contar = new IntersectionObserver(
+        (entradas) => {
+          for (const entrada of entradas) {
+            if (!entrada.isIntersecting) continue
+            const el = entrada.target as HTMLElement
+            const alvo = Number(el.dataset.contar)
+            if (!Number.isFinite(alvo)) continue
+            const inicio = performance.now()
+            const duracao = 900
+            const tick = (agora: number) => {
+              const t = Math.min(1, (agora - inicio) / duracao)
+              const eased = 1 - Math.pow(1 - t, 3)
+              el.textContent = String(Math.round(alvo * eased))
+              if (t < 1) requestAnimationFrame(tick)
+            }
+            requestAnimationFrame(tick)
+            contar.unobserve(el)
+          }
+        },
+        { threshold: 0.4 },
+      )
+      numeros.forEach((n) => contar.observe(n))
+    }
   </script>
 </Base>
