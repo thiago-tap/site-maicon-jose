@@ -37,11 +37,11 @@ const metaDestaque = destaque ? metaDoFilme(destaque) : ''
 const poolFiltro = [destaque, ...grade].filter(Boolean) as FilmeVitrine[]
 const tipos: TipoFilme[] = tiposPresentes(poolFiltro).filter((t) => t !== 'vertical')
 const temFiltros = mostrarFiltros && tipos.length > 1
-const tituloSecao = modo === 'arquivo' ? 'Arquivo de filmes' : 'Nossos filmes'
+const tituloSecao = modo === 'arquivo' ? 'Arquivo de vídeos' : 'Nossos vídeos'
 const leadSecao =
   modo === 'arquivo'
     ? 'Filtre por categoria e assista no cinema da página.'
-    : 'Cada história é única. Os filmes capturam a essência e a emoção do dia — com ritmo de cinema.'
+    : 'Cada história é única. Os vídeos capturam a essência e a emoção do dia — com ritmo de cinema.'
 const ocultosNoArquivo =
   modo === 'home' && horizontais.length > (grade.length + (destaque ? 1 : 0))
 ---
@@ -56,7 +56,7 @@ const ocultosNoArquivo =
 
     {
       temFiltros ? (
-        <div class="filmes__filtros revelar" data-filmes-filtros role="group" aria-label="Filtrar filmes">
+        <div class="filmes__filtros revelar" data-filmes-filtros role="group" aria-label="Filtrar vídeos">
           <button type="button" class="chip" data-filtro="todos" aria-pressed="true">
             Todos
           </button>
@@ -133,7 +133,7 @@ const ocultosNoArquivo =
     {
       ocultosNoArquivo ? (
         <p class="filmes__mais revelar">
-          <a href={linkArquivo}>Ver todos os filmes</a>
+          <a href={linkArquivo}>Ver todos os vídeos</a>
         </p>
       ) : null
     }
