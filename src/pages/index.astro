@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro'
+import Menu from '../components/Menu.astro'
 import FilmesCinema from '../components/FilmesCinema.astro'
 import FilmesVerticais from '../components/FilmesVerticais.astro'
 import Processo from '../components/Processo.astro'
@@ -33,7 +34,7 @@ const sobreTitulo = dados.sobre?.titulo?.trim() || 'Quem sou'
 const sobreTexto =
   dados.sobre?.apresentacao?.trim() ||
   dados.sobre?.resumo?.trim() ||
-  'Filmes e conteúdos em vídeo com narrativa cinematográfica.'
+  'Vídeos e conteúdos com narrativa cinematográfica.'
 const sobreEstilo = dados.sobre?.estilo?.trim()
 const numeros = (dados.sobre?.numeros || []).filter(
   (n) => Number.isFinite(n.valor) && n.rotulo?.trim(),
@@ -56,21 +57,7 @@ const slugTenant = dados.tenant?.slug?.trim() || 'maicon-jose'
 ---
 
 <Base titulo={`${marca} — ${especialidade}`} descricao={descricao}>
-  <header class="nav" data-nav>
-    <a class="nav__marca" href="#inicio">
-      {marca}
-      <span>{especialidade}</span>
-    </a>
-    <ul class="nav__links">
-      <li><a href="#filmes">Filmes</a></li>
-      <li><a href="/filmes">Arquivo</a></li>
-      <li><a href="#processo">Processo</a></li>
-      <li><a href="#sobre">Sobre</a></li>
-      <li><a href="#pacotes">Investimento</a></li>
-      <li><a href="#faq">FAQ</a></li>
-      <li><a href="#contato">Contato</a></li>
-    </ul>
-  </header>
+  <Menu marca={marca} especialidade={especialidade} pagina="inicio" />
 
   <main>
     <section class="hero" id="inicio" data-hero>
@@ -85,8 +72,8 @@ const slugTenant = dados.tenant?.slug?.trim() || 'maicon-jose'
         <p class="hero__frase revelar revelar--2">
           {
             cidade
-              ? `${especialidade} em ${cidade}. Veja os filmes, conheça os pacotes e consulte a sua data.`
-              : `${especialidade}. Veja os filmes, conheça os pacotes e consulte a sua data.`
+              ? `${especialidade} em ${cidade}. Veja os vídeos, conheça os pacotes e consulte a sua data.`
+              : `${especialidade}. Veja os vídeos, conheça os pacotes e consulte a sua data.`
           }
         </p>
         <div class="hero__ctas revelar revelar--3">
@@ -192,7 +179,7 @@ const slugTenant = dados.tenant?.slug?.trim() || 'maicon-jose'
           <div class="container">
             <p class="rotulo revelar">Serviços adicionais</p>
             <h2 class="titulo-secao revelar">Personalize o pacote</h2>
-            <p class="lead revelar">Extras para deixar o filme ainda mais completo.</p>
+            <p class="lead revelar">Extras para deixar o vídeo ainda mais completo.</p>
             <div class="grade-extras">
               {extras.map((extra, i) => (
                 <article class={`extra revelar revelar--${Math.min(i % 4, 3)}`}>
@@ -221,7 +208,7 @@ const slugTenant = dados.tenant?.slug?.trim() || 'maicon-jose'
           <div class="container">
             <p class="rotulo revelar">Depoimentos</p>
             <h2 class="titulo-secao revelar">O que dizem</h2>
-            <p class="lead revelar">Quem confiou o filme do grande dia.</p>
+            <p class="lead revelar">Quem confiou o vídeo do grande dia.</p>
             <div class="grade-depo">
               {depoimentos.map((depo, i) => (
                 <figure class={`depo revelar revelar--${Math.min(i, 3)}`}>
@@ -245,7 +232,7 @@ const slugTenant = dados.tenant?.slug?.trim() || 'maicon-jose'
     <section class="cta-final" id="contato">
       <div class="container">
         <p class="rotulo revelar">Contato</p>
-        <h2 class="titulo-secao revelar">Vamos falar do seu filme?</h2>
+        <h2 class="titulo-secao revelar">Vamos falar do seu vídeo?</h2>
         <p class="lead revelar">
           Me conte a data e o que vocês imaginam. Respondo pelo WhatsApp.
         </p>
@@ -276,9 +263,9 @@ const slugTenant = dados.tenant?.slug?.trim() || 'maicon-jose'
   <footer class="rodape">
     <p class="rodape__marca">{marca}</p>
     <div class="rodape__links">
-      <a href="#filmes">Filmes</a>
-      <a href="/filmes">Arquivo</a>
-      <a href="#pacotes">Pacotes</a>
+      <a href="#filmes">Vídeos</a>
+      <a href="/filmes">Todos os vídeos</a>
+      <a href="#pacotes">Investimento</a>
       <a href="#contato">Contato</a>
       {
         instagramUrl ? (
