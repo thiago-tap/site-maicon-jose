@@ -2,32 +2,79 @@
 import {
   escolherDestaque,
   filmesDaGrade,
+  metaDoFilme,
+  rotulosTipoFilme,
+  tipoDoFilme,
+  tiposPresentes,
   urlDaCapa,
   type FilmeVitrine,
+  type TipoFilme,
 } from '../data/filmes'
 
-type Props = { filmes: FilmeVitrine[]; slugTenant?: string }
+type Props = {
+  filmes: FilmeVitrine[]
+  slugTenant?: string
+  /** home: curado (sem verticais na grade, máx. 7 + destaque). arquivo: todos horizontais. */
+  modo?: 'home' | 'arquivo'
+  mostrarFiltros?: boolean
+  linkArquivo?: string
+}
 
-const { filmes, slugTenant = 'maicon-jose' } = Astro.props
-const destaque = escolherDestaque(filmes)
-const grade = filmesDaGrade(filmes, destaque)
+const {
+  filmes,
+  slugTenant = 'maicon-jose',
+  modo = 'home',
+  mostrarFiltros = true,
+  linkArquivo = '/filmes',
+} = Astro.props
+
+const horizontais = filmes.filter((f) => tipoDoFilme(f) !== 'vertical')
+const destaque = escolherDestaque(horizontais)
+const maxGrade = modo === 'home' ? 7 : undefined
+const grade = filmesDaGrade(horizontais, destaque, { incluirVerticais: false, max: maxGrade })
 const capaDestaque = destaque ? urlDaCapa(destaque, slugTenant) : undefined
+const metaDestaque = destaque ? metaDoFilme(destaque) : ''
+const poolFiltro = [destaque, ...grade].filter(Boolean) as FilmeVitrine[]
+const tipos: TipoFilme[] = tiposPresentes(poolFiltro).filter((t) => t !== 'vertical')
+const temFiltros = mostrarFiltros && tipos.length > 1
+const tituloSecao = modo === 'arquivo' ? 'Arquivo de filmes' : 'Nossos filmes'
+const leadSecao =
+  modo === 'arquivo'
+    ? 'Filtre por categoria e assista no cinema da página.'
+    : 'Cada história é única. Os filmes capturam a essência e a emoção do dia — com ritmo de cinema.'
+const ocultosNoArquivo =
+  modo === 'home' && horizontais.length > (grade.length + (destaque ? 1 : 0))
 ---
 
 {
   destaque ? (
-<section class="filmes" id="filmes" data-filmes-cinema>
+<section class="filmes" id="filmes" data-filmes-cinema data-modo={modo}>
   <div class="container">
     <p class="rotulo revelar">Portfólio</p>
-    <h2 class="titulo-secao revelar">Nossos filmes</h2>
-    <p class="lead revelar">
-      Cada história é única. Os filmes capturam a essência e a emoção do dia — com ritmo de cinema.
-    </p>
+    <h2 class="titulo-secao revelar">{tituloSecao}</h2>
+    <p class="lead revelar">{leadSecao}</p>
+
+    {
+      temFiltros ? (
+        <div class="filmes__filtros revelar" data-filmes-filtros role="group" aria-label="Filtrar filmes">
+          <button type="button" class="chip" data-filtro="todos" aria-pressed="true">
+            Todos
+          </button>
+          {tipos.map((tipo) => (
+            <button type="button" class="chip" data-filtro={tipo} aria-pressed="false">
+              {rotulosTipoFilme[tipo]}
+            </button>
+          ))}
+        </div>
+      ) : null
+    }
 
     <button
       type="button"
       class="filme filme--destaque revelar"
       data-filme-abrir
+      data-filme-card
+      data-tipo={tipoDoFilme(destaque)}
       data-youtube-id={destaque.youtubeId}
       data-titulo={destaque.titulo}
       data-url={destaque.url}
@@ -40,8 +87,10 @@ const capaDestaque = destaque ? urlDaCapa(destaque, slugTenant) : undefined
             <svg viewBox="0 0 24 24"><polygon points="8,5 20,12 8,19"></polygon></svg>
           </span>
         </div>
+        <span class="filme__badge">{rotulosTipoFilme[tipoDoFilme(destaque)]}</span>
       </div>
       <p class="filme__titulo">{destaque.titulo}</p>
+      {metaDestaque ? <p class="filme__meta">{metaDestaque}</p> : null}
     </button>
 
     {
@@ -49,11 +98,15 @@ const capaDestaque = destaque ? urlDaCapa(destaque, slugTenant) : undefined
         <div class="grade-filmes">
           {grade.map((filme, i) => {
             const capa = urlDaCapa(filme, slugTenant)
+            const meta = metaDoFilme(filme)
+            const tipo = tipoDoFilme(filme)
             return (
             <button
               type="button"
               class={`filme revelar revelar--${Math.min(i + 1, 3)}`}
               data-filme-abrir
+              data-filme-card
+              data-tipo={tipo}
               data-youtube-id={filme.youtubeId}
               data-titulo={filme.titulo}
               data-url={filme.url}
@@ -66,12 +119,22 @@ const capaDestaque = destaque ? urlDaCapa(destaque, slugTenant) : undefined
                     <svg viewBox="0 0 24 24"><polygon points="8,5 20,12 8,19"></polygon></svg>
                   </span>
                 </div>
+                <span class="filme__badge">{rotulosTipoFilme[tipo]}</span>
               </div>
               <p class="filme__titulo">{filme.titulo}</p>
+              {meta ? <p class="filme__meta">{meta}</p> : null}
             </button>
             )
           })}
         </div>
+      ) : null
+    }
+
+    {
+      ocultosNoArquivo ? (
+        <p class="filmes__mais revelar">
+          <a href={linkArquivo}>Ver todos os filmes</a>
+        </p>
       ) : null
     }
   </div>
@@ -108,7 +171,6 @@ const capaDestaque = destaque ? urlDaCapa(destaque, slugTenant) : undefined
       rel: '0',
       modestbranding: '1',
       iv_load_policy: '3',
-      // Sem barra nativa: menos chrome do YouTube (título/logo ainda podem aparecer no hover/fim).
       controls: '0',
       disablekb: '1',
       cc_load_policy: '0',
@@ -120,6 +182,8 @@ const capaDestaque = destaque ? urlDaCapa(destaque, slugTenant) : undefined
   function iniciar() {
     const raiz = document.querySelector('[data-filmes-cinema]')
     if (!(raiz instanceof HTMLElement)) return
+    if (raiz.dataset.cinemaPronto === '1') return
+    raiz.dataset.cinemaPronto = '1'
 
     const cinema = raiz.querySelector('[data-cinema]')
     const palco = raiz.querySelector('[data-cinema-palco]')
@@ -189,6 +253,27 @@ const capaDestaque = destaque ? urlDaCapa(destaque, slugTenant) : undefined
     document.addEventListener('keydown', (evento) => {
       if (evento.key === 'Escape' && !cinema.hidden) fechar()
     })
+
+    const filtros = raiz.querySelector('[data-filmes-filtros]')
+    if (filtros instanceof HTMLElement) {
+      const chips = [...filtros.querySelectorAll<HTMLButtonElement>('[data-filtro]')]
+      const cards = [...raiz.querySelectorAll<HTMLElement>('[data-filme-card]')]
+
+      function aplicar(filtro: string) {
+        for (const chip of chips) {
+          chip.setAttribute('aria-pressed', chip.dataset.filtro === filtro ? 'true' : 'false')
+        }
+        for (const card of cards) {
+          const tipo = card.dataset.tipo || 'casamento'
+          const mostra = filtro === 'todos' || tipo === filtro
+          card.hidden = !mostra
+        }
+      }
+
+      chips.forEach((chip) => {
+        chip.addEventListener('click', () => aplicar(chip.dataset.filtro || 'todos'))
+      })
+    }
   }
 
   iniciar()
