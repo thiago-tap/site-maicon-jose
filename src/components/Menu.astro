@@ -1,0 +1,47 @@
+---
+/**
+ * Menu único em todas as páginas.
+ * Home: âncoras (#…). Demais páginas: volta para a home com âncora (/#…).
+ * “Arquivo” e “FAQ” saem do menu (arquivo = /filmes via “Ver todos”; FAQ fica na home).
+ */
+type Pagina = 'inicio' | 'videos'
+
+type Props = {
+  marca: string
+  especialidade: string
+  pagina?: Pagina
+}
+
+const { marca, especialidade, pagina = 'inicio' } = Astro.props
+const naHome = pagina === 'inicio'
+const prefixo = naHome ? '' : '/'
+
+const itens = [
+  { id: 'videos' as const, rotulo: 'Vídeos', href: naHome ? '#filmes' : '/filmes' },
+  { id: 'processo' as const, rotulo: 'Processo', href: `${prefixo}#processo` },
+  { id: 'sobre' as const, rotulo: 'Sobre', href: `${prefixo}#sobre` },
+  { id: 'investimento' as const, rotulo: 'Investimento', href: `${prefixo}#pacotes` },
+  { id: 'contato' as const, rotulo: 'Contato', href: `${prefixo}#contato` },
+]
+---
+
+<header class:list={['nav', !naHome && 'nav--pagina']} data-nav data-solido={naHome ? undefined : true}>
+  <a class="nav__marca" href={naHome ? '#inicio' : '/'}>
+    {marca}
+    <span>{especialidade}</span>
+  </a>
+  <ul class="nav__links">
+    {
+      itens.map((item) => (
+        <li>
+          <a
+            href={item.href}
+            aria-current={pagina === 'videos' && item.id === 'videos' ? 'page' : undefined}
+          >
+            {item.rotulo}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</header>
