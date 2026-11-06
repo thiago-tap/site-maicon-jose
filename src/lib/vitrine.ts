@@ -37,7 +37,21 @@ export type Vitrine = {
     resumo?: string
     apresentacao?: string
     estilo?: string
+    numeros?: Array<{ valor: number; rotulo: string }>
   }
+  comoFunciona?: Array<{
+    id: string
+    titulo: string
+    texto: string
+    detalhe?: string
+    ordem: number
+  }>
+  faq?: Array<{
+    id: string
+    pergunta: string
+    resposta: string
+    ordem: number
+  }>
   pacotes?: Array<{
     id: string
     nome: string
@@ -100,7 +114,13 @@ function mesclarComFallback(dados: Vitrine): Vitrine {
     ...dados,
     identidade: { ...fallback.identidade, ...dados.identidade },
     inicio: { ...fallback.inicio, ...dados.inicio },
-    sobre: { ...fallback.sobre, ...dados.sobre },
+    sobre: {
+      ...fallback.sobre,
+      ...dados.sobre,
+      numeros: dados.sobre?.numeros?.length ? dados.sobre.numeros : fallback.sobre?.numeros,
+    },
+    comoFunciona: dados.comoFunciona?.length ? dados.comoFunciona : fallback.comoFunciona,
+    faq: dados.faq?.length ? dados.faq : fallback.faq,
     pacotes: dados.pacotes?.length ? dados.pacotes : fallback.pacotes,
     extras: dados.extras?.length ? dados.extras : fallback.extras,
     depoimentos: dados.depoimentos?.length ? dados.depoimentos : fallback.depoimentos,
