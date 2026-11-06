@@ -847,4 +847,348 @@ body.cinema-aberto {
   display: grid;
   grid-template-columns: auto 1fr auto;
   gap: 0.85rem;
-  align-items: 
+  align-items: baseline;
+  padding: 1.25rem 0;
+  cursor: pointer;
+  list-style: none;
+}
+
+.faq__item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq__indice {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--ouro);
+}
+
+.faq__pergunta {
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.faq__mais {
+  font-size: 1.5rem;
+  font-weight: 200;
+  color: var(--cinza);
+  transition: transform 0.25s ease;
+}
+
+.faq__item[open] .faq__mais {
+  transform: rotate(45deg);
+}
+
+.faq__resposta {
+  padding: 0 0 1.35rem 2rem;
+  color: var(--cinza);
+}
+
+.faq__resposta p {
+  margin: 0 0 0.75rem;
+}
+
+.faq__resposta p:last-child {
+  margin-bottom: 0;
+}
+
+/* —— Verticais —— */
+.verticais {
+  padding: 5rem 0 6rem;
+  background:
+    linear-gradient(180deg, transparent, rgba(197, 153, 75, 0.05) 40%, transparent),
+    var(--noite);
+}
+
+.verticais .rotulo,
+.verticais .titulo-secao {
+  text-align: center;
+}
+
+.verticais__trilho {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(11rem, 14rem);
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.vertical {
+  scroll-snap-align: start;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.vertical__capa {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  background:
+    linear-gradient(145deg, #1a1612, #0d0c0b 55%, #1c1813),
+    radial-gradient(circle at 30% 20%, rgba(197, 153, 75, 0.2), transparent 50%);
+  border: 1px solid color-mix(in srgb, var(--ouro) 18%, transparent);
+}
+
+.vertical__capa img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.vertical:hover .vertical__capa img {
+  transform: scale(1.05);
+}
+
+/* —— Arquivo /filmes —— */
+.arquivo-intro {
+  padding: 7.5rem 0 1rem;
+  background: var(--noite);
+}
+
+.arquivo-intro .rotulo,
+.arquivo-intro .titulo-secao {
+  text-align: center;
+}
+
+.nav--pagina {
+  background: rgba(10, 10, 10, 0.92);
+  border-bottom: 1px solid color-mix(in srgb, var(--ouro) 14%, transparent);
+}
+
+.nav a[aria-current='page'] {
+  color: var(--ouro);
+}
+
+/* —— Pacotes —— */
+.investimento {
+  padding: 6rem 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(197, 153, 75, 0.08), transparent 60%),
+    var(--noite);
+}
+
+.investimento .rotulo,
+.investimento .titulo-secao {
+  text-align: center;
+}
+
+.grade-pacotes {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: 1fr;
+  align-items: stretch;
+}
+
+@media (width >= 48rem) {
+  .grade-pacotes {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.pacote {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.75rem 1.4rem 1.5rem;
+  background: var(--noite-suave);
+  border: 1px solid color-mix(in srgb, var(--ouro) 16%, transparent);
+}
+
+.pacote--destaque {
+  border-color: var(--ouro);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ouro) 35%, transparent);
+}
+
+.pacote__selo {
+  align-self: start;
+  margin: 0;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--noite);
+  background: var(--ouro);
+}
+
+.pacote__nome {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 1.75rem;
+  font-weight: 500;
+}
+
+.pacote__preco {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 2.4rem;
+  font-weight: 500;
+  color: var(--ouro-claro);
+  line-height: 1;
+}
+
+.pacote__chamada {
+  margin: 0;
+  color: var(--cinza);
+  font-size: 0.95rem;
+}
+
+.pacote__itens {
+  margin: 0.25rem 0 0;
+  padding: 0;
+  list-style: none;
+  flex: 1;
+}
+
+.pacote__itens li {
+  position: relative;
+  padding: 0.55rem 0 0.55rem 1.15rem;
+  border-top: 1px solid color-mix(in srgb, var(--branco) 8%, transparent);
+  font-size: 0.92rem;
+  color: var(--cinza-claro);
+}
+
+.pacote__itens li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 1.05rem;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 999px;
+  background: var(--ouro);
+}
+
+.pacote .btn {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+/* —— Extras —— */
+.extras {
+  padding: 6rem 0;
+  background: var(--creme);
+  color: #1c1814;
+}
+
+.extras .rotulo {
+  text-align: center;
+}
+
+.extras .titulo-secao {
+  text-align: center;
+  color: #1c1814;
+}
+
+.extras .lead {
+  color: #666;
+}
+
+.grade-extras {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (width >= 40rem) {
+  .grade-extras {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.extra {
+  padding: 1.4rem 1.25rem;
+  background: #fff;
+  border: 1px solid color-mix(in srgb, #1c1814 8%, transparent);
+}
+
+.extra h3 {
+  margin: 0 0 0.45rem;
+  font-family: var(--serif);
+  font-size: 1.35rem;
+  font-weight: 500;
+}
+
+.extra p {
+  margin: 0;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.extra__preco {
+  margin-top: 0.75rem !important;
+  font-size: 0.8rem !important;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ouro-escuro) !important;
+}
+
+/* —— Depoimentos —— */
+.depoimentos {
+  padding: 6rem 0;
+  background: var(--noite-suave);
+}
+
+.depoimentos .rotulo,
+.depoimentos .titulo-secao {
+  text-align: center;
+}
+
+.grade-depo {
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (width >= 48rem) {
+  .grade-depo {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.depo {
+  padding: 1.6rem 1.35rem;
+  background: var(--noite);
+  border-top: 2px solid var(--ouro);
+}
+
+.depo blockquote {
+  margin: 0 0 1.25rem;
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-style: italic;
+  line-height: 1.55;
+  color: var(--cinza-claro);
+}
+
+.depo cite {
+  font-style: normal;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ouro);
+}
+
+/* —— CTA final —— */
+.cta-final {
+  padding: 5.5rem 0;
+  text-align: center;
+  background:
+    radial-gradient(ellipse 50% 60% at 50% 40%, rgba(197, 153, 75, 0.14), transparent 65%),
+    var(--noite);
+}
+
+.cta-final
