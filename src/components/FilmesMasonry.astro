@@ -1,1 +1,232 @@
-PLACEHOLDER_LOAD_FROM_DISK_1
+---
+/**
+ * Arquivo completo: masonry CSS (colunas) + filtros leves.
+ * Verticais ficam fora (trilho FilmesVerticais).
+ */
+import {
+  metaDoFilme,
+  rotulosTipoFilme,
+  tipoDoFilme,
+  tiposPresentes,
+  urlDaCapa,
+  type FilmeVitrine,
+  type TipoFilme,
+} from '../data/filmes'
+
+type Props = {
+  filmes: FilmeVitrine[]
+  slugTenant?: string
+}
+
+const { filmes, slugTenant = 'maicon-jose' } = Astro.props
+
+const horizontais = filmes.filter((f) => tipoDoFilme(f) !== 'vertical')
+/** Ritmo visual: proporções alternadas (capa com object-fit cover). */
+const proporcoes = ['16 / 10', '4 / 5', '3 / 2', '16 / 9', '5 / 6', '3 / 4'] as const
+
+function proporcaoDoIndice(i: number): string {
+  return proporcoes[i % proporcoes.length]!
+}
+
+const tipos: TipoFilme[] = tiposPresentes(horizontais).filter((t) => t !== 'vertical')
+const temFiltros = tipos.length > 1
+---
+
+{
+  horizontais.length > 0 ? (
+<section class="arquivo-masonry" id="arquivo" data-filmes-masonry>
+  <div class="container">
+    {
+      temFiltros ? (
+        <div class="filmes__filtros revelar" data-filmes-filtros role="group" aria-label="Filtrar vídeos">
+          <button type="button" class="chip" data-filtro="todos" aria-pressed="true">
+            Todos
+          </button>
+          {tipos.map((tipo) => (
+            <button type="button" class="chip" data-filtro={tipo} aria-pressed="false">
+              {rotulosTipoFilme[tipo]}
+            </button>
+          ))}
+        </div>
+      ) : null
+    }
+
+    <div class="masonry" data-masonry>
+      {horizontais.map((filme, i) => {
+        const capa = urlDaCapa(filme, slugTenant)
+        const meta = metaDoFilme(filme)
+        const tipo = tipoDoFilme(filme)
+        return (
+          <button
+            type="button"
+            class="masonry__item revelar"
+            style={`--atraso: ${Math.min(i, 8) * 60}ms`}
+            data-filme-abrir
+            data-filme-card
+            data-tipo={tipo}
+            data-youtube-id={filme.youtubeId}
+            data-titulo={filme.titulo}
+            data-url={filme.url}
+            aria-label={`Assistir ${filme.titulo}`}
+          >
+            <div class="masonry__capa" style={`aspect-ratio: ${proporcaoDoIndice(i)}`}>
+              {capa ? <img src={capa} alt="" loading="lazy" /> : null}
+              <div class="filme__play">
+                <span aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <polygon points="8,5 20,12 8,19"></polygon>
+                  </svg>
+                </span>
+              </div>
+              <span class="filme__badge">{rotulosTipoFilme[tipo]}</span>
+            </div>
+            <p class="filme__titulo">{filme.titulo}</p>
+            {meta ? <p class="filme__meta">{meta}</p> : null}
+          </button>
+        )
+      })}
+    </div>
+  </div>
+
+  <div class="cinema" data-cinema hidden>
+    <div class="cinema__backdrop" data-cinema-fechar tabindex="-1"></div>
+    <div
+      class="cinema__dialogo"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Player de vídeo"
+      data-cinema-dialogo
+    >
+      <button type="button" class="cinema__fechar" data-cinema-fechar aria-label="Fechar">
+        ×
+      </button>
+      <div class="cinema__palco" data-cinema-palco></div>
+      <p class="cinema__titulo" data-cinema-titulo></p>
+      <p class="cinema__erro" data-cinema-erro hidden>
+        Não foi possível carregar o vídeo.
+        <a data-cinema-escape href="#" target="_blank" rel="noopener noreferrer">
+          Abrir no YouTube
+        </a>
+      </p>
+    </div>
+  </div>
+</section>
+  ) : null
+}
+
+<script>
+  function montarEmbed(youtubeId: string): string {
+    const params = new URLSearchParams({
+      autoplay: '1',
+      playsinline: '1',
+      rel: '0',
+      modestbranding: '1',
+      iv_load_policy: '3',
+      controls: '0',
+      disablekb: '1',
+      cc_load_policy: '0',
+      fs: '1',
+    })
+    return `https://www.youtube-nocookie.com/embed/${encodeURIComponent(youtubeId)}?${params}`
+  }
+
+  function iniciar() {
+    const raiz = document.querySelector('[data-filmes-masonry]')
+    if (!(raiz instanceof HTMLElement)) return
+    if (raiz.dataset.cinemaPronto === '1') return
+    raiz.dataset.cinemaPronto = '1'
+
+    const cinema = raiz.querySelector('[data-cinema]')
+    const palco = raiz.querySelector('[data-cinema-palco]')
+    const tituloEl = raiz.querySelector('[data-cinema-titulo]')
+    const erroEl = raiz.querySelector('[data-cinema-erro]')
+    const escapeEl = raiz.querySelector('[data-cinema-escape]')
+    if (
+      !(cinema instanceof HTMLElement) ||
+      !(palco instanceof HTMLElement) ||
+      !(tituloEl instanceof HTMLElement) ||
+      !(erroEl instanceof HTMLElement) ||
+      !(escapeEl instanceof HTMLAnchorElement)
+    ) {
+      return
+    }
+
+    let ultimoFoco: HTMLElement | null = null
+
+    function fechar() {
+      cinema!.hidden = true
+      document.body.classList.remove('cinema-aberto')
+      palco!.replaceChildren()
+      erroEl!.hidden = true
+      ultimoFoco?.focus()
+      ultimoFoco = null
+    }
+
+    function abrir(botao: HTMLElement) {
+      const youtubeId = botao.dataset.youtubeId?.trim()
+      const titulo = botao.dataset.titulo?.trim() || 'Vídeo'
+      const url = botao.dataset.url?.trim() || '#'
+      if (!youtubeId) return
+
+      ultimoFoco = botao
+      tituloEl!.textContent = titulo
+      escapeEl!.href = url
+      erroEl!.hidden = true
+      palco!.replaceChildren()
+
+      const iframe = document.createElement('iframe')
+      iframe.src = montarEmbed(youtubeId)
+      iframe.title = titulo
+      iframe.allow =
+        'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+      iframe.allowFullscreen = true
+      iframe.referrerPolicy = 'strict-origin-when-cross-origin'
+      iframe.addEventListener('error', () => {
+        erroEl!.hidden = false
+      })
+      palco!.append(iframe)
+
+      cinema!.hidden = false
+      document.body.classList.add('cinema-aberto')
+      const fecharBtn = cinema!.querySelector('.cinema__fechar')
+      if (fecharBtn instanceof HTMLElement) fecharBtn.focus()
+    }
+
+    raiz.querySelectorAll('[data-filme-abrir]').forEach((el) => {
+      el.addEventListener('click', () => {
+        if (el instanceof HTMLElement) abrir(el)
+      })
+    })
+
+    cinema.querySelectorAll('[data-cinema-fechar]').forEach((el) => {
+      el.addEventListener('click', fechar)
+    })
+
+    document.addEventListener('keydown', (evento) => {
+      if (evento.key === 'Escape' && !cinema.hidden) fechar()
+    })
+
+    const filtros = raiz.querySelector('[data-filmes-filtros]')
+    if (filtros instanceof HTMLElement) {
+      const chips = [...filtros.querySelectorAll<HTMLButtonElement>('[data-filtro]')]
+      const cards = [...raiz.querySelectorAll<HTMLElement>('[data-filme-card]')]
+
+      function aplicar(filtro: string) {
+        for (const chip of chips) {
+          chip.setAttribute('aria-pressed', chip.dataset.filtro === filtro ? 'true' : 'false')
+        }
+        for (const card of cards) {
+          const tipo = card.dataset.tipo || 'casamento'
+          card.hidden = !(filtro === 'todos' || tipo === filtro)
+        }
+      }
+
+      chips.forEach((chip) => {
+        chip.addEventListener('click', () => aplicar(chip.dataset.filtro || 'todos'))
+      })
+    }
+  }
+
+  iniciar()
+  document.addEventListener('astro:page-load', iniciar)
+</script>
