@@ -1,1 +1,339 @@
-PLACEHOLDER_LOAD_FROM_DISK_3
+---
+import Base from '../layouts/Base.astro'
+import Menu from '../components/Menu.astro'
+import FilmesCinema from '../components/FilmesCinema.astro'
+import FilmesVerticais from '../components/FilmesVerticais.astro'
+import Processo from '../components/Processo.astro'
+import Faq from '../components/Faq.astro'
+import HeroBannerFundo from '../components/HeroBannerFundo.astro'
+import Flutuantes from '../components/Flutuantes.astro'
+import { filmesFallback } from '../data/filmes'
+import { iniciais } from '../lib/format'
+import {
+  buscarVitrine,
+  formatarPreco,
+  linkWhatsapp,
+  marcaDoSite,
+} from '../lib/vitrine'
+
+const dados = await buscarVitrine()
+const marca = marcaDoSite(dados)
+const especialidade =
+  dados.inicio?.especialidade?.trim() ||
+  dados.identidade?.especialidade?.trim() ||
+  'Filmagem cinematográfica'
+const frase =
+  dados.inicio?.frase?.trim() ||
+  dados.identidade?.frase?.trim() ||
+  'Histórias em vídeo com olhar de cinema.'
+const descricao =
+  dados.identidade?.descricao?.trim() ||
+  `${marca} — ${especialidade}. Consulte a data pelo WhatsApp.`
+const cidade = [dados.identidade?.cidade, dados.identidade?.uf].filter(Boolean).join(' / ')
+const sobreTitulo = dados.sobre?.titulo?.trim() || 'Quem sou'
+const sobreTexto =
+  dados.sobre?.apresentacao?.trim() ||
+  dados.sobre?.resumo?.trim() ||
+  'Vídeos e conteúdos com narrativa cinematográfica.'
+const sobreEstilo = dados.sobre?.estilo?.trim()
+const numeros = (dados.sobre?.numeros || []).filter(
+  (n) => Number.isFinite(n.valor) && n.rotulo?.trim(),
+)
+const pacotes = [...(dados.pacotes || [])].sort((a, b) => a.ordem - b.ordem)
+const extras = dados.extras || []
+const depoimentos = [...(dados.depoimentos || [])].sort(
+  (a, b) => (a.ordem ?? 0) - (b.ordem ?? 0),
+)
+const etapas = dados.comoFunciona || []
+const faq = dados.faq || []
+const whatsapp = linkWhatsapp(dados)
+const instagramUsuario = dados.contato?.instagram?.usuario?.replace(/^@/, '').trim()
+const instagramUrl =
+  dados.contato?.instagram?.url?.trim() ||
+  (instagramUsuario ? `https://www.instagram.com/${instagramUsuario}/` : '')
+const monograma = iniciais(marca)
+const filmes = dados.filmes?.length ? dados.filmes : filmesFallback
+const slugTenant = dados.tenant?.slug?.trim() || 'maicon-jose'
+---
+
+<Base titulo={`${marca} — ${especialidade}`} descricao={descricao}>
+  <Menu marca={marca} especialidade={especialidade} pagina="inicio" />
+
+  <main>
+    <section class="hero" id="inicio" data-hero>
+      <div class="hero__fundo" aria-hidden="true"></div>
+      <HeroBannerFundo banner={dados.inicio?.bannerVideo} slugTenant={slugTenant} />
+      <div class="hero__conteudo">
+        <p class="hero__marca revelar">
+          {marca}
+          <small>{especialidade}</small>
+        </p>
+        <h1 class="revelar revelar--1">{frase}</h1>
+        <p class="hero__frase revelar revelar--2">
+          {
+            cidade
+              ? `${especialidade} em ${cidade}. Veja os vídeos, conheça os pacotes e consulte a sua data.`
+              : `${especialidade}. Veja os vídeos, conheça os pacotes e consulte a sua data.`
+          }
+        </p>
+        <div class="hero__ctas revelar revelar--3">
+          <a class="btn btn--ouro" href="#pacotes">Conhecer os pacotes</a>
+          {
+            whatsapp ? (
+              <a class="btn btn--linha" href={whatsapp} target="_blank" rel="noopener noreferrer">
+                Consultar data
+              </a>
+            ) : (
+              <a class="btn btn--linha" href="#contato">
+                Falar comigo
+              </a>
+            )
+          }
+        </div>
+      </div>
+      <div class="hero__scroll" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <polyline points="7 13 12 18 17 13"></polyline>
+          <line x1="12" y1="6" x2="12" y2="18"></line>
+        </svg>
+      </div>
+    </section>
+
+    <FilmesCinema filmes={filmes} slugTenant={slugTenant} />
+    <FilmesVerticais filmes={filmes} slugTenant={slugTenant} />
+    <Processo etapas={etapas} />
+
+    <section class="sobre" id="sobre">
+      <div class="container sobre__grid">
+        <div class="sobre__retrato revelar" aria-hidden="true">{monograma}</div>
+        <div class="sobre__texto">
+          <p class="rotulo revelar">Sobre</p>
+          <h2 class="titulo-secao revelar">{sobreTitulo}</h2>
+          <div class="sobre__accent revelar"></div>
+          <p class="revelar">{sobreTexto}</p>
+          {sobreEstilo ? <p class="sobre__estilo revelar">{sobreEstilo}</p> : null}
+          {
+            numeros.length > 0 ? (
+              <ul class="sobre__numeros revelar">
+                {numeros.map((n) => (
+                  <li>
+                    <strong data-contar={n.valor}>{n.valor}</strong>
+                    <span>{n.rotulo}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : null
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="investimento" id="pacotes">
+      <div class="container">
+        <p class="rotulo revelar">Investimento</p>
+        <h2 class="titulo-secao revelar">Escolha o pacote</h2>
+        <p class="lead revelar">
+          Todos incluem entrega online. O fechamento é pelo WhatsApp — sem orçamento automático.
+        </p>
+        <div class="grade-pacotes">
+          {
+            pacotes.map((pacote, i) => {
+              const waPacote = linkWhatsapp(
+                dados,
+                pacote.mensagemWhatsapp ||
+                  `Olá! Tenho interesse no ${pacote.nome} (${formatarPreco(pacote.preco)}).`,
+              )
+              return (
+                <article
+                  class={`pacote revelar revelar--${Math.min(i, 3)}${pacote.destaque ? ' pacote--destaque' : ''}`}
+                >
+                  {pacote.selo ? <p class="pacote__selo">{pacote.selo}</p> : null}
+                  <h3 class="pacote__nome">{pacote.nome}</h3>
+                  <p class="pacote__preco">{formatarPreco(pacote.preco)}</p>
+                  {pacote.chamada ? <p class="pacote__chamada">{pacote.chamada}</p> : null}
+                  <ul class="pacote__itens">
+                    {pacote.itens.map((item) => (
+                      <li>{item}</li>
+                    ))}
+                  </ul>
+                  {waPacote ? (
+                    <a class="btn btn--ouro" href={waPacote} target="_blank" rel="noopener noreferrer">
+                      Quero este pacote
+                    </a>
+                  ) : (
+                    <a class="btn btn--ouro" href="#contato">
+                      Consultar
+                    </a>
+                  )}
+                </article>
+              )
+            })
+          }
+        </div>
+      </div>
+    </section>
+
+    {
+      extras.length > 0 ? (
+        <section class="extras" id="extras">
+          <div class="container">
+            <p class="rotulo revelar">Serviços adicionais</p>
+            <h2 class="titulo-secao revelar">Personalize o pacote</h2>
+            <p class="lead revelar">Extras para deixar o vídeo ainda mais completo.</p>
+            <div class="grade-extras">
+              {extras.map((extra, i) => (
+                <article class={`extra revelar revelar--${Math.min(i % 4, 3)}`}>
+                  <h3>{extra.nome}</h3>
+                  {extra.descricao ? <p>{extra.descricao}</p> : null}
+                  {typeof extra.preco === 'number' ? (
+                    <p class="extra__preco">
+                      {extra.aPartirDe ? 'A partir de ' : ''}
+                      {formatarPreco(extra.preco)}
+                      {extra.unidade ? ` / ${extra.unidade}` : ''}
+                    </p>
+                  ) : (
+                    <p class="extra__preco">Sob consulta</p>
+                  )}
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null
+    }
+
+    {
+      depoimentos.length > 0 ? (
+        <section class="depoimentos" id="depoimentos">
+          <div class="container">
+            <p class="rotulo revelar">Depoimentos</p>
+            <h2 class="titulo-secao revelar">O que dizem</h2>
+            <p class="lead revelar">Quem confiou o vídeo do grande dia.</p>
+            <div class="grade-depo">
+              {depoimentos.map((depo, i) => (
+                <figure class={`depo revelar revelar--${Math.min(i, 3)}`}>
+                  <blockquote>{depo.texto}</blockquote>
+                  <figcaption>
+                    <cite>
+                      {depo.casal}
+                      {depo.local ? ` · ${depo.local}` : ''}
+                    </cite>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null
+    }
+
+    <Faq perguntas={faq} />
+
+    <section class="cta-final" id="contato">
+      <div class="container">
+        <p class="rotulo revelar">Contato</p>
+        <h2 class="titulo-secao revelar">Vamos falar do seu vídeo?</h2>
+        <p class="lead revelar">
+          Me conte a data e o que vocês imaginam. Respondo pelo WhatsApp.
+        </p>
+        <div class="cta-final__acoes revelar">
+          {
+            whatsapp ? (
+              <a class="btn btn--wa" href={whatsapp} target="_blank" rel="noopener noreferrer">
+                Falar no WhatsApp
+              </a>
+            ) : (
+              <p class="lead" style="margin:0">
+                Configure o WhatsApp no painel para liberar o botão.
+              </p>
+            )
+          }
+          {
+            instagramUrl ? (
+              <a class="btn btn--linha" href={instagramUrl} target="_blank" rel="noopener noreferrer">
+                Instagram{instagramUsuario ? ` @${instagramUsuario}` : ''}
+              </a>
+            ) : null
+          }
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <p class="rodape__marca">{marca}</p>
+    <div class="rodape__links">
+      <a href="#filmes">Vídeos</a>
+      <a href="/filmes">Todos os vídeos</a>
+      <a href="#pacotes">Investimento</a>
+      <a href="#contato">Contato</a>
+      {
+        instagramUrl ? (
+          <a href={instagramUrl} target="_blank" rel="noopener noreferrer">
+            Instagram
+          </a>
+        ) : null
+      }
+    </div>
+    <p class="rodape__credito">
+      Desenvolvido por:{' '}
+      <a href="https://www.instagram.com/thiagaotap/" target="_blank" rel="noopener noreferrer"
+        >Thiago Albuquerque</a
+      >
+      {' · '}Estúdio Sites
+    </p>
+  </footer>
+
+  <Flutuantes whatsapp={whatsapp} />
+
+  <script>
+    document.documentElement.classList.add('js')
+
+    const nav = document.querySelector<HTMLElement>('[data-nav]')
+    function atualizarNav() {
+      nav?.toggleAttribute('data-solido', window.scrollY > 24)
+    }
+    window.addEventListener('scroll', atualizarNav, { passive: true })
+    atualizarNav()
+
+    const observador = new IntersectionObserver(
+      (entradas) => {
+        for (const entrada of entradas) {
+          if (entrada.isIntersecting) {
+            entrada.target.toggleAttribute('data-visivel', true)
+            observador.unobserve(entrada.target)
+          }
+        }
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -8% 0px' },
+    )
+    document.querySelectorAll('.revelar').forEach((el) => observador.observe(el))
+
+    const movimentoReduzido = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const numeros = document.querySelectorAll<HTMLElement>('[data-contar]')
+    if (numeros.length > 0 && !movimentoReduzido && 'IntersectionObserver' in window) {
+      const contar = new IntersectionObserver(
+        (entradas) => {
+          for (const entrada of entradas) {
+            if (!entrada.isIntersecting) continue
+            const el = entrada.target as HTMLElement
+            const alvo = Number(el.dataset.contar)
+            if (!Number.isFinite(alvo)) continue
+            const inicio = performance.now()
+            const duracao = 900
+            const tick = (agora: number) => {
+              const t = Math.min(1, (agora - inicio) / duracao)
+              const eased = 1 - Math.pow(1 - t, 3)
+              el.textContent = String(Math.round(alvo * eased))
+              if (t < 1) requestAnimationFrame(tick)
+            }
+            requestAnimationFrame(tick)
+            contar.unobserve(el)
+          }
+        },
+        { threshold: 0.4 },
+      )
+      numeros.forEach((n) => contar.observe(n))
+    }
+  </script>
+</Base>
