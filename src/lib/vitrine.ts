@@ -18,6 +18,18 @@ export type Vitrine = {
   inicio?: {
     especialidade?: string
     frase?: string
+    bannerVideo?: {
+      desktop?: { youtubeId?: string; url?: string }
+      mobile?: { youtubeId?: string; url?: string }
+      capa?: {
+        url?: string
+        alt?: string
+        fontesAoVivo?: {
+          base?: { src: string }
+          computador?: { src: string }
+        }
+      }
+    }
   }
   sobre?: {
     titulo?: string

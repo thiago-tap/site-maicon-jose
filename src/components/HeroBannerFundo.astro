@@ -1,0 +1,123 @@
+---
+/**
+ * Vídeo de fundo do hero (YouTube). Desktop e mobile com IDs separados.
+ * Sem ID → só o gradient/still. prefers-reduced-motion → capa estática.
+ */
+type BannerVideo = {
+  desktop?: { youtubeId?: string }
+  mobile?: { youtubeId?: string }
+  capa?: {
+    url?: string
+    alt?: string
+    fontesAoVivo?: {
+      base?: { src: string }
+      computador?: { src: string }
+    }
+  }
+}
+
+type Props = {
+  banner?: BannerVideo
+  slugTenant?: string
+}
+
+const { banner, slugTenant } = Astro.props
+const desktopId = banner?.desktop?.youtubeId?.trim() || ''
+const mobileId = banner?.mobile?.youtubeId?.trim() || ''
+const temVideo = Boolean(desktopId || mobileId)
+
+const capa = banner?.capa
+const capaSrc =
+  capa?.fontesAoVivo?.computador?.src ||
+  capa?.fontesAoVivo?.base?.src ||
+  (capa?.url && capa.url !== '.' && !capa.url.includes('/api/midia/file/') ? capa.url : undefined)
+---
+
+{
+  temVideo || capaSrc ? (
+    <div
+      class="hero__midia"
+      data-hero-banner
+      data-yt-desktop={desktopId || undefined}
+      data-yt-mobile={mobileId || undefined}
+      data-slug={slugTenant || undefined}
+      aria-hidden="true"
+    >
+      {capaSrc ? (
+        <img class="hero__capa" src={capaSrc} alt="" width="1920" height="1080" decoding="async" />
+      ) : null}
+      <div class="hero__video" data-hero-video hidden></div>
+    </div>
+  ) : null
+}
+
+{
+  temVideo ? (
+    <script>
+      function montarEmbed(youtubeId: string): string {
+        const params = new URLSearchParams({
+          autoplay: '1',
+          mute: '1',
+          controls: '0',
+          loop: '1',
+          playlist: youtubeId,
+          playsinline: '1',
+          rel: '0',
+          modestbranding: '1',
+          iv_load_policy: '3',
+          disablekb: '1',
+          fs: '0',
+          cc_load_policy: '0',
+        })
+        return `https://www.youtube-nocookie.com/embed/${encodeURIComponent(youtubeId)}?${params}`
+      }
+
+      function idParaViewport(raiz: HTMLElement): string | undefined {
+        const mobile = window.matchMedia('(max-width: 767px)').matches
+        const desktopId = raiz.dataset.ytDesktop?.trim()
+        const mobileId = raiz.dataset.ytMobile?.trim()
+        if (mobile) return mobileId || desktopId
+        return desktopId || mobileId
+      }
+
+      function aplicar() {
+        const raiz = document.querySelector('[data-hero-banner]')
+        if (!(raiz instanceof HTMLElement)) return
+        const palco = raiz.querySelector('[data-hero-video]')
+        if (!(palco instanceof HTMLElement)) return
+
+        const reduzir = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        palco.replaceChildren()
+        if (reduzir) {
+          palco.hidden = true
+          raiz.classList.remove('hero__midia--video')
+          return
+        }
+
+        const youtubeId = idParaViewport(raiz)
+        if (!youtubeId) {
+          palco.hidden = true
+          raiz.classList.remove('hero__midia--video')
+          return
+        }
+
+        const iframe = document.createElement('iframe')
+        iframe.src = montarEmbed(youtubeId)
+        iframe.title = 'Vídeo de fundo'
+        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+        iframe.setAttribute('allowfullscreen', 'false')
+        iframe.referrerPolicy = 'strict-origin-when-cross-origin'
+        iframe.setAttribute('tabindex', '-1')
+        palco.append(iframe)
+        palco.hidden = false
+        raiz.classList.add('hero__midia--video')
+      }
+
+      aplicar()
+      const mq = window.matchMedia('(max-width: 767px)')
+      const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
+      mq.addEventListener('change', aplicar)
+      motion.addEventListener('change', aplicar)
+    </script>
+  ) : null
+}
