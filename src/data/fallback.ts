@@ -27,7 +27,71 @@ export const fallback: Vitrine = {
     apresentacao:
       'Cada história pede um ritmo. Meu trabalho é transformar o que aconteceu em um filme que vocês vão querer reviver.',
     estilo: 'Cinematográfico, emocional e discreto',
+    numeros: [
+      { valor: 8, rotulo: 'anos filmando' },
+      { valor: 120, rotulo: 'casamentos' },
+    ],
   },
+  comoFunciona: [
+    {
+      id: 'conversa',
+      titulo: 'Conversa inicial',
+      texto: 'Vocês me contam a data, o local e o que imaginam para o filme. Eu confirmo disponibilidade pelo WhatsApp.',
+      detalhe: 'Sem compromisso',
+      ordem: 1,
+    },
+    {
+      id: 'planejamento',
+      titulo: 'Planejamento',
+      texto: 'Alinhamos ritmo, momentos importantes e equipe. Vocês sabem exatamente o que esperar no dia.',
+      detalhe: 'Roteiro leve',
+      ordem: 2,
+    },
+    {
+      id: 'filmagem',
+      titulo: 'O grande dia',
+      texto: 'Filmo com discrição e olhar de cinema — cerimônia, festa e os detalhes que só o vídeo guarda.',
+      detalhe: 'Presença discreta',
+      ordem: 3,
+    },
+    {
+      id: 'entrega',
+      titulo: 'Edição e entrega',
+      texto: 'Teaser, filme e arquivos online. Vocês recebem um filme para reviver — e compartilhar com quem estava lá.',
+      detalhe: 'Entrega online',
+      ordem: 4,
+    },
+  ],
+  faq: [
+    {
+      id: 'quando-reservar',
+      pergunta: 'Com quanto tempo preciso reservar a data?',
+      resposta:
+        'O ideal é assim que a data estiver definida — datas de alta temporada esgotam rápido. Me chame no WhatsApp com o dia e o local que eu confirmo.',
+      ordem: 1,
+    },
+    {
+      id: 'drone',
+      pergunta: 'Vocês filmam com drone?',
+      resposta:
+        'Sim, quando o local permite e o pacote inclui (ou como extra). Sempre respeito as regras do espaço e a segurança dos convidados.',
+      ordem: 2,
+    },
+    {
+      id: 'entrega',
+      pergunta: 'Em quanto tempo o filme fica pronto?',
+      resposta:
+        'O prazo depende do pacote e da temporada. Na conversa inicial eu passo a estimativa realista para a sua data.',
+      ordem: 3,
+    },
+    {
+      id: 'pagamento',
+      pergunta: 'Como funciona o pagamento?',
+      resposta:
+        'Combinamos pelo WhatsApp: reserva da data e o restante conforme o pacote. Não há orçamento automático no site — o fechamento é humano.',
+      ordem: 4,
+    },
+  ],
   pacotes: [
     {
       id: 'pacote-1',
