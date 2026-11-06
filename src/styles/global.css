@@ -1191,4 +1191,161 @@ body.cinema-aberto {
     var(--noite);
 }
 
-.cta-final
+.cta-final .titulo-secao {
+  margin-bottom: 0.75rem;
+}
+
+.cta-final .lead {
+  margin-bottom: 2rem;
+}
+
+.cta-final__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  justify-content: center;
+}
+
+/* —— Rodapé —— */
+.rodape {
+  padding: 2.5rem var(--pad) 2rem;
+  background: var(--noite-profunda);
+  border-top: 1px solid color-mix(in srgb, var(--ouro) 14%, transparent);
+  text-align: center;
+}
+
+.rodape__marca {
+  margin: 0 0 0.5rem;
+  font-family: var(--serif);
+  font-size: 1.35rem;
+  letter-spacing: 0.12em;
+}
+
+.rodape__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin: 1rem 0 1.5rem;
+}
+
+.rodape__links a {
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--cinza);
+}
+
+.rodape__links a:hover {
+  color: var(--ouro-claro);
+}
+
+.rodape__credito {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #555;
+}
+
+.rodape__credito a {
+  color: var(--cinza-claro);
+  text-underline-offset: 0.18em;
+}
+
+/* —— Flutuantes (herdados do template) —— */
+.flutuante-wa {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 2.75rem;
+  padding: 0.65rem 1.1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #052012;
+  background: var(--wa);
+  transition:
+    opacity 0.45s ease,
+    translate 0.45s ease,
+    filter 0.25s ease;
+}
+
+.flutuante-wa:hover {
+  filter: brightness(1.05);
+}
+
+.flutuante-wa__icone {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+.flutuante-topo {
+  position: fixed;
+  left: 1rem;
+  bottom: 1rem;
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 0;
+  border-radius: 999px;
+  color: var(--noite);
+  background: var(--ouro);
+  cursor: pointer;
+  transition:
+    opacity 0.45s ease,
+    translate 0.45s ease,
+    filter 0.25s ease;
+}
+
+.flutuante-topo:hover {
+  filter: brightness(1.05);
+}
+
+.flutuante-topo svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+@media (width <= 359px) {
+  .flutuante-wa {
+    width: 2.75rem;
+    padding: 0;
+  }
+
+  .flutuante-wa__texto {
+    display: none;
+  }
+}
+
+@media (width >= 48rem) {
+  .flutuante-wa,
+  .flutuante-topo {
+    bottom: 2rem;
+  }
+
+  .flutuante-wa {
+    right: 2rem;
+  }
+
+  .flutuante-topo {
+    left: 2rem;
+  }
+}
+
+html.js .flutuante-wa:not([data-visivel]),
+html.js .flutuante-topo:not([data-visivel]) {
+  opacity: 0;
+  translate: 0 0.6rem;
+  pointer-events: none;
+}
