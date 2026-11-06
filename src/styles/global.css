@@ -1,1 +1,450 @@
-@file:///tmp/maicon/site/src/styles/global.css
+:root {
+  --ouro: #c5994b;
+  --ouro-claro: #d4a966;
+  --ouro-escuro: #a67c3b;
+  --noite: #0a0a0a;
+  --noite-suave: #111111;
+  --noite-profunda: #050505;
+  --creme: #f5f0eb;
+  --branco: #ffffff;
+  --cinza: #8a8a8a;
+  --cinza-claro: #cfcfcf;
+  --wa: #25d366;
+  --serif: 'Cormorant Garamond', 'Palatino Linotype', Palatino, Georgia, serif;
+  --sans: 'Outfit', 'Segoe UI', system-ui, sans-serif;
+  --largura: 72rem;
+  --pad: clamp(1.25rem, 4vw, 2rem);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--sans);
+  color: var(--branco);
+  background: var(--noite);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: inherit;
+}
+
+.container {
+  width: min(100%, var(--largura));
+  margin-inline: auto;
+  padding-inline: var(--pad);
+}
+
+.rotulo {
+  margin: 0 0 0.85rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--ouro);
+}
+
+.titulo-secao {
+  margin: 0 0 1rem;
+  font-family: var(--serif);
+  font-size: clamp(2rem, 4.5vw, 3rem);
+  font-weight: 500;
+  line-height: 1.15;
+}
+
+.lead {
+  margin: 0 auto 3rem;
+  max-width: 36rem;
+  color: var(--cinza);
+  text-align: center;
+  line-height: 1.8;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3rem;
+  padding: 0.85rem 1.6rem;
+  border: 0;
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.btn--ouro {
+  background: var(--ouro);
+  color: var(--noite);
+}
+
+.btn--ouro:hover {
+  background: var(--ouro-escuro);
+  color: var(--creme);
+}
+
+.btn--linha {
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--ouro) 55%, transparent);
+  color: var(--creme);
+}
+
+.btn--linha:hover {
+  border-color: var(--ouro);
+  color: var(--ouro-claro);
+}
+
+.btn--wa {
+  background: var(--wa);
+  color: #052012;
+}
+
+.btn--wa:hover {
+  filter: brightness(1.06);
+}
+
+/* —— Nav —— */
+.nav {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem var(--pad);
+  background: linear-gradient(180deg, rgba(5, 5, 5, 0.88), rgba(5, 5, 5, 0));
+  transition: background 0.35s ease;
+}
+
+.nav[data-solido] {
+  background: rgba(5, 5, 5, 0.92);
+  border-bottom: 1px solid color-mix(in srgb, var(--ouro) 18%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+.nav__marca {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+}
+
+.nav__marca span {
+  display: block;
+  font-family: var(--sans);
+  font-size: 0.62rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--ouro);
+}
+
+.nav__links {
+  display: none;
+  gap: 1.35rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav__links a {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--cinza-claro);
+}
+
+.nav__links a:hover {
+  color: var(--ouro-claro);
+}
+
+@media (width >= 56rem) {
+  .nav__links {
+    display: flex;
+  }
+}
+
+/* —— Hero —— */
+.hero {
+  position: relative;
+  isolation: isolate;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 7rem var(--pad) 5rem;
+  overflow: hidden;
+}
+
+.hero__fundo {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 35%, rgba(197, 153, 75, 0.18), transparent 60%),
+    radial-gradient(ellipse 90% 70% at 80% 100%, rgba(80, 50, 20, 0.35), transparent 55%),
+    linear-gradient(180deg, #14110e 0%, var(--noite) 55%, var(--noite) 100%);
+}
+
+.hero__midia {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.hero__capa {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.55;
+}
+
+.hero__midia--video .hero__capa {
+  opacity: 0.2;
+}
+
+.hero__video {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.hero__video[hidden] {
+  display: none !important;
+}
+
+.hero__video iframe {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100vw;
+  height: 56.25vw;
+  min-height: 100%;
+  min-width: 177.78vh;
+  border: 0;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+@media (max-width: 767px) {
+  .hero__video iframe {
+    width: 100vw;
+    height: 177.78vw; /* cover 9:16-ish on tall screens */
+    min-width: 100%;
+    min-height: 100%;
+  }
+}
+
+.hero:has(.hero__midia) .hero__fundo {
+  z-index: -1;
+  background: transparent;
+}
+
+.hero__fundo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(10, 10, 10, 0.35), rgba(10, 10, 10, 0.82)),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(255, 255, 255, 0.015) 2px,
+      rgba(255, 255, 255, 0.015) 3px
+    );
+}
+
+.hero:has(.hero__midia) .hero__fundo::after {
+  background: linear-gradient(180deg, rgba(10, 10, 10, 0.52), rgba(10, 10, 10, 0.9));
+}
+
+.hero__conteudo {
+  position: relative;
+  z-index: 1;
+  max-width: 44rem;
+}
+
+.hero__marca {
+  margin: 0 0 1.75rem;
+  font-family: var(--serif);
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.hero__marca small {
+  display: block;
+  margin-top: 0.45rem;
+  font-family: var(--sans);
+  font-size: 0.68rem;
+  letter-spacing: 0.42em;
+  color: var(--ouro);
+}
+
+.hero h1 {
+  margin: 0 0 1.1rem;
+  font-family: var(--serif);
+  font-size: clamp(2.35rem, 6.5vw, 3.85rem);
+  font-weight: 500;
+  line-height: 1.12;
+}
+
+.hero__frase {
+  margin: 0 auto 2rem;
+  max-width: 34rem;
+  color: var(--cinza-claro);
+  font-size: 1.05rem;
+  line-height: 1.75;
+}
+
+.hero__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  justify-content: center;
+}
+
+.hero__scroll {
+  position: absolute;
+  left: 50%;
+  bottom: 1.5rem;
+  translate: -50% 0;
+  color: var(--ouro);
+  opacity: 0.75;
+  animation: sobe-desce 2.2s ease-in-out infinite;
+}
+
+@keyframes sobe-desce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(0.4rem);
+  }
+}
+
+/* —— Reveal —— */
+.revelar {
+  opacity: 0;
+  transform: translateY(1.4rem);
+  transition:
+    opacity 0.8s ease,
+    transform 0.8s ease;
+}
+
+.revelar[data-visivel] {
+  opacity: 1;
+  transform: none;
+}
+
+.revelar--1 {
+  transition-delay: 0.12s;
+}
+.revelar--2 {
+  transition-delay: 0.24s;
+}
+.revelar--3 {
+  transition-delay: 0.36s;
+}
+
+/* —— Filmes —— */
+.filmes {
+  padding: 6rem 0;
+  background: var(--noite);
+}
+
+.filmes .rotulo,
+.filmes .titulo-secao {
+  text-align: center;
+}
+
+.filme--destaque {
+  display: block;
+  width: min(100%, 56rem);
+  margin: 0 auto 1.75rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+}
+
+.filme--destaque .filme__capa {
+  aspect-ratio: 16 / 9;
+}
+
+.grade-filmes {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: 1fr;
+}
+
+@media (width >= 40rem) {
+  .grade-filmes {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.filme {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  text-decoration: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.filme__capa {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background:
+    linear-gradient(145deg, #1a1612, #0d0c0b 55%, #1c1813),
+    radial-gradient(circle at 30% 20%, rgba(197, 153, 75, 0.2), transparent 50%);
+  border: 1px solid color-mix(in srgb, var(--ouro) 18%, transparent);
+}
