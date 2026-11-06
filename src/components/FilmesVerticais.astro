@@ -1,0 +1,173 @@
+---
+import {
+  filmesVerticais,
+  metaDoFilme,
+  urlDaCapa,
+  type FilmeVitrine,
+} from '../data/filmes'
+
+type Props = { filmes: FilmeVitrine[]; slugTenant?: string }
+
+const { filmes, slugTenant = 'maicon-jose' } = Astro.props
+const verticais = filmesVerticais(filmes)
+---
+
+{
+  verticais.length > 0 ? (
+    <section class="verticais" id="verticais" data-filmes-verticais>
+      <div class="container">
+        <p class="rotulo revelar">Formato curto</p>
+        <h2 class="titulo-secao revelar">Verticais e Reels</h2>
+        <p class="lead revelar">Trechos em 9:16 — o que roda bem no celular e no Instagram.</p>
+        <div class="verticais__trilho" data-verticais-trilho>
+          {verticais.map((filme, i) => {
+            const capa = urlDaCapa(filme, slugTenant)
+            const meta = metaDoFilme(filme)
+            return (
+              <button
+                type="button"
+                class={`vertical revelar revelar--${Math.min(i, 3)}`}
+                data-filme-abrir
+                data-youtube-id={filme.youtubeId}
+                data-titulo={filme.titulo}
+                data-url={filme.url}
+                aria-label={`Assistir ${filme.titulo}`}
+              >
+                <div class="vertical__capa">
+                  {capa ? <img src={capa} alt="" loading="lazy" /> : null}
+                  <div class="filme__play">
+                    <span aria-hidden="true">
+                      <svg viewBox="0 0 24 24">
+                        <polygon points="8,5 20,12 8,19"></polygon>
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+                <p class="filme__titulo">{filme.titulo}</p>
+                {meta ? <p class="filme__meta">{meta}</p> : null}
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
+      <div class="cinema" data-cinema hidden>
+        <div class="cinema__backdrop" data-cinema-fechar tabindex="-1"></div>
+        <div
+          class="cinema__dialogo cinema__dialogo--vertical"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Player de filme vertical"
+          data-cinema-dialogo
+        >
+          <button type="button" class="cinema__fechar" data-cinema-fechar aria-label="Fechar">
+            ×
+          </button>
+          <div class="cinema__palco cinema__palco--vertical" data-cinema-palco></div>
+          <p class="cinema__titulo" data-cinema-titulo></p>
+          <p class="cinema__erro" data-cinema-erro hidden>
+            Não foi possível carregar o filme.
+            <a data-cinema-escape href="#" target="_blank" rel="noopener noreferrer">
+              Abrir no YouTube
+            </a>
+          </p>
+        </div>
+      </div>
+    </section>
+  ) : null
+}
+
+<script>
+  function montarEmbed(youtubeId: string): string {
+    const params = new URLSearchParams({
+      autoplay: '1',
+      playsinline: '1',
+      rel: '0',
+      modestbranding: '1',
+      iv_load_policy: '3',
+      controls: '0',
+      disablekb: '1',
+      cc_load_policy: '0',
+      fs: '1',
+    })
+    return `https://www.youtube-nocookie.com/embed/${encodeURIComponent(youtubeId)}?${params}`
+  }
+
+  function iniciarVerticais() {
+    const raiz = document.querySelector('[data-filmes-verticais]')
+    if (!(raiz instanceof HTMLElement)) return
+
+    const cinema = raiz.querySelector('[data-cinema]')
+    const palco = raiz.querySelector('[data-cinema-palco]')
+    const tituloEl = raiz.querySelector('[data-cinema-titulo]')
+    const erroEl = raiz.querySelector('[data-cinema-erro]')
+    const escapeEl = raiz.querySelector('[data-cinema-escape]')
+    if (
+      !(cinema instanceof HTMLElement) ||
+      !(palco instanceof HTMLElement) ||
+      !(tituloEl instanceof HTMLElement) ||
+      !(erroEl instanceof HTMLElement) ||
+      !(escapeEl instanceof HTMLAnchorElement)
+    ) {
+      return
+    }
+
+    let ultimoFoco: HTMLElement | null = null
+
+    function fechar() {
+      cinema!.hidden = true
+      document.body.classList.remove('cinema-aberto')
+      palco!.replaceChildren()
+      erroEl!.hidden = true
+      ultimoFoco?.focus()
+      ultimoFoco = null
+    }
+
+    function abrir(botao: HTMLElement) {
+      const youtubeId = botao.dataset.youtubeId?.trim()
+      const titulo = botao.dataset.titulo?.trim() || 'Filme'
+      const url = botao.dataset.url?.trim() || '#'
+      if (!youtubeId) return
+
+      ultimoFoco = botao
+      tituloEl!.textContent = titulo
+      escapeEl!.href = url
+      erroEl!.hidden = true
+      palco!.replaceChildren()
+
+      const iframe = document.createElement('iframe')
+      iframe.src = montarEmbed(youtubeId)
+      iframe.title = titulo
+      iframe.allow =
+        'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+      iframe.allowFullscreen = true
+      iframe.referrerPolicy = 'strict-origin-when-cross-origin'
+      iframe.addEventListener('error', () => {
+        erroEl!.hidden = false
+      })
+      palco!.append(iframe)
+
+      cinema!.hidden = false
+      document.body.classList.add('cinema-aberto')
+      const fecharBtn = cinema!.querySelector('.cinema__fechar')
+      if (fecharBtn instanceof HTMLElement) fecharBtn.focus()
+    }
+
+    raiz.querySelectorAll('[data-filme-abrir]').forEach((el) => {
+      el.addEventListener('click', () => {
+        if (el instanceof HTMLElement) abrir(el)
+      })
+    })
+
+    cinema.querySelectorAll('[data-cinema-fechar]').forEach((el) => {
+      el.addEventListener('click', fechar)
+    })
+
+    document.addEventListener('keydown', (evento) => {
+      if (evento.key === 'Escape' && !cinema.hidden) fechar()
+    })
+  }
+
+  iniciarVerticais()
+  document.addEventListener('astro:page-load', iniciarVerticais)
+</script>

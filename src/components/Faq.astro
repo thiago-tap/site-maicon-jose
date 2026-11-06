@@ -1,0 +1,53 @@
+---
+type Pergunta = {
+  id: string
+  pergunta: string
+  resposta: string
+  ordem: number
+}
+
+type Props = { perguntas: Pergunta[] }
+
+const { perguntas } = Astro.props
+const lista = [...perguntas].sort((a, b) => a.ordem - b.ordem)
+
+function paragrafos(texto: string): string[] {
+  return texto
+    .replace(/\r\n/g, '\n')
+    .split(/\n{2,}/)
+    .map((p) => p.trim())
+    .filter(Boolean)
+}
+---
+
+{
+  lista.length > 0 ? (
+    <section class="faq" id="faq">
+      <div class="container faq__largura">
+        <p class="rotulo revelar">Dúvidas</p>
+        <h2 class="titulo-secao revelar">Perguntas frequentes</h2>
+        <p class="lead revelar">Respostas diretas antes de falar no WhatsApp.</p>
+        <div class="faq__lista">
+          {lista.map((item, i) => (
+            <details class={`faq__item revelar revelar--${Math.min(i % 4, 3)}`} name="faq-maicon">
+              <summary>
+                <span class="faq__indice" aria-hidden="true">
+                  {i + 1}.
+                </span>
+                <span class="faq__pergunta">{item.pergunta}</span>
+                <span class="faq__mais" aria-hidden="true">
+                  +
+                </span>
+              </summary>
+              <div class="faq__resposta">
+                {paragrafos(item.resposta).map((p) => (
+                  <p>{p}</p>
+                ))}
+              </div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+  ) : null
+}

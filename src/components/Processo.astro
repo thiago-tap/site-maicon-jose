@@ -1,0 +1,40 @@
+---
+type Etapa = {
+  id: string
+  titulo: string
+  texto: string
+  detalhe?: string
+  ordem: number
+}
+
+type Props = { etapas: Etapa[] }
+
+const { etapas } = Astro.props
+const lista = [...etapas].sort((a, b) => a.ordem - b.ordem)
+---
+
+{
+  lista.length > 0 ? (
+    <section class="processo" id="processo">
+      <div class="container">
+        <p class="rotulo revelar">Método</p>
+        <h2 class="titulo-secao revelar">Como filmamos</h2>
+        <p class="lead revelar">Do primeiro oi à entrega do filme — sem surpresas.</p>
+        <ol class="processo__lista">
+          {lista.map((etapa, i) => (
+            <li class={`processo__item revelar revelar--${Math.min(i, 3)}`}>
+              <span class="processo__numero" aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <div class="processo__corpo">
+                <h3>{etapa.titulo}</h3>
+                {etapa.detalhe ? <p class="processo__detalhe">{etapa.detalhe}</p> : null}
+                <p>{etapa.texto}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  ) : null
+}
