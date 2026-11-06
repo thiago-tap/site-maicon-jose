@@ -694,11 +694,11 @@ body.cinema-aberto {
   margin: 0;
   padding: 0.35rem 0.7rem;
   font-size: 0.65rem;
+  font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--noite);
   background: var(--ouro);
-  font-weight: 600;
 }
 
 .pacote__nome {
