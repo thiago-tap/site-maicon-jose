@@ -498,6 +498,82 @@ a {
   font-weight: 500;
 }
 
+.filme__meta {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  color: var(--cinza);
+}
+
+.filme__badge {
+  position: absolute;
+  left: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 1;
+  padding: 0.3rem 0.55rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--creme);
+  background: rgba(10, 10, 10, 0.62);
+  border: 1px solid color-mix(in srgb, var(--ouro) 35%, transparent);
+  backdrop-filter: blur(4px);
+}
+
+.filme[hidden] {
+  display: none !important;
+}
+
+.filmes__filtros {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.55rem;
+  margin: -1rem auto 2.25rem;
+}
+
+.chip {
+  padding: 0.45rem 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--ouro) 28%, transparent);
+  background: transparent;
+  color: var(--cinza-claro);
+  font: inherit;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.chip[aria-pressed='true'],
+.chip:hover {
+  color: var(--noite);
+  background: var(--ouro);
+  border-color: var(--ouro);
+}
+
+.filmes__mais {
+  margin: 2.5rem 0 0;
+  text-align: center;
+}
+
+.filmes__mais a {
+  color: var(--ouro);
+  text-decoration: none;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.filmes__mais a:hover {
+  text-decoration: underline;
+}
+
 .filme__aviso {
   margin: 1.5rem 0 0;
   text-align: center;
@@ -535,6 +611,14 @@ body.cinema-aberto {
   /* Quase tela cheia, limitado pela altura (16:9) e pelas laterais */
   width: min(96vw, calc((100dvh - 7rem) * 16 / 9));
   max-width: 100%;
+}
+
+.cinema__dialogo--vertical {
+  width: min(92vw, calc((100dvh - 7rem) * 9 / 16), 26rem);
+}
+
+.cinema__palco--vertical {
+  aspect-ratio: 9 / 16;
 }
 
 .cinema__fechar {
@@ -647,6 +731,244 @@ body.cinema-aberto {
   font-size: 1.35rem;
   font-style: italic;
   color: var(--ouro-claro) !important;
+}
+
+.sobre__numeros {
+  list-style: none;
+  margin: 2rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 22rem;
+}
+
+.sobre__numeros strong {
+  display: block;
+  font-family: var(--serif);
+  font-size: clamp(2rem, 4vw, 2.6rem);
+  font-weight: 500;
+  line-height: 1;
+  color: var(--ouro);
+}
+
+.sobre__numeros span {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  color: var(--cinza);
+}
+
+/* —— Processo —— */
+.processo {
+  padding: 6rem 0;
+  background: var(--noite-suave);
+}
+
+.processo .rotulo,
+.processo .titulo-secao {
+  text-align: center;
+}
+
+.processo__lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1.75rem;
+}
+
+@media (width >= 56rem) {
+  .processo__lista {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+.processo__item {
+  display: grid;
+  gap: 0.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid color-mix(in srgb, var(--ouro) 22%, transparent);
+}
+
+.processo__numero {
+  font-family: var(--serif);
+  font-size: 2.4rem;
+  line-height: 1;
+  color: color-mix(in srgb, var(--ouro) 55%, transparent);
+}
+
+.processo__corpo h3 {
+  margin: 0 0 0.35rem;
+  font-family: var(--serif);
+  font-size: 1.35rem;
+  font-weight: 500;
+}
+
+.processo__detalhe {
+  margin: 0 0 0.5rem !important;
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--ouro-claro) !important;
+}
+
+.processo__corpo p {
+  margin: 0;
+  color: var(--cinza);
+  font-size: 0.95rem;
+}
+
+/* —— FAQ —— */
+.faq {
+  padding: 6rem 0;
+  background: var(--noite);
+}
+
+.faq .rotulo,
+.faq .titulo-secao {
+  text-align: center;
+}
+
+.faq__largura {
+  max-width: 44rem;
+}
+
+.faq__lista {
+  border-top: 1px solid color-mix(in srgb, var(--ouro) 18%, transparent);
+}
+
+.faq__item {
+  border-bottom: 1px solid color-mix(in srgb, var(--ouro) 18%, transparent);
+}
+
+.faq__item summary {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.85rem;
+  align-items: baseline;
+  padding: 1.25rem 0;
+  cursor: pointer;
+  list-style: none;
+}
+
+.faq__item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq__indice {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--ouro);
+}
+
+.faq__pergunta {
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.faq__mais {
+  font-size: 1.5rem;
+  font-weight: 200;
+  color: var(--cinza);
+  transition: transform 0.25s ease;
+}
+
+.faq__item[open] .faq__mais {
+  transform: rotate(45deg);
+}
+
+.faq__resposta {
+  padding: 0 0 1.35rem 2rem;
+  color: var(--cinza);
+}
+
+.faq__resposta p {
+  margin: 0 0 0.75rem;
+}
+
+.faq__resposta p:last-child {
+  margin-bottom: 0;
+}
+
+/* —— Verticais —— */
+.verticais {
+  padding: 5rem 0 6rem;
+  background:
+    linear-gradient(180deg, transparent, rgba(197, 153, 75, 0.05) 40%, transparent),
+    var(--noite);
+}
+
+.verticais .rotulo,
+.verticais .titulo-secao {
+  text-align: center;
+}
+
+.verticais__trilho {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(11rem, 14rem);
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.vertical {
+  scroll-snap-align: start;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.vertical__capa {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  background:
+    linear-gradient(145deg, #1a1612, #0d0c0b 55%, #1c1813),
+    radial-gradient(circle at 30% 20%, rgba(197, 153, 75, 0.2), transparent 50%);
+  border: 1px solid color-mix(in srgb, var(--ouro) 18%, transparent);
+}
+
+.vertical__capa img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.vertical:hover .vertical__capa img {
+  transform: scale(1.05);
+}
+
+/* —— Arquivo /filmes —— */
+.arquivo-intro {
+  padding: 7.5rem 0 1rem;
+  background: var(--noite);
+}
+
+.arquivo-intro .rotulo,
+.arquivo-intro .titulo-secao {
+  text-align: center;
+}
+
+.nav--pagina {
+  background: rgba(10, 10, 10, 0.92);
+  border-bottom: 1px solid color-mix(in srgb, var(--ouro) 14%, transparent);
+}
+
+.nav a[aria-current='page'] {
+  color: var(--ouro);
 }
 
 /* —— Pacotes —— */
