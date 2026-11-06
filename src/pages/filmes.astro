@@ -1,1 +1,106 @@
-PLACEHOLDER_LOAD_FROM_DISK_2
+---
+import Base from '../layouts/Base.astro'
+import Menu from '../components/Menu.astro'
+import FilmesMasonry from '../components/FilmesMasonry.astro'
+import FilmesVerticais from '../components/FilmesVerticais.astro'
+import Flutuantes from '../components/Flutuantes.astro'
+import { filmesFallback } from '../data/filmes'
+import { buscarVitrine, linkWhatsapp, marcaDoSite } from '../lib/vitrine'
+
+const dados = await buscarVitrine()
+const marca = marcaDoSite(dados)
+const especialidade =
+  dados.inicio?.especialidade?.trim() ||
+  dados.identidade?.especialidade?.trim() ||
+  'Filmagem cinematográfica'
+const descricao = `Vídeos de ${marca} — arquivo completo com teasers, casamentos, making of e verticais.`
+const filmes = dados.filmes?.length ? dados.filmes : filmesFallback
+const slugTenant = dados.tenant?.slug?.trim() || 'maicon-jose'
+const whatsapp = linkWhatsapp(dados, 'Olá! Vi os vídeos no site e gostaria de conversar.')
+const instagramUsuario = dados.contato?.instagram?.usuario?.replace(/^@/, '').trim()
+const instagramUrl =
+  dados.contato?.instagram?.url?.trim() ||
+  (instagramUsuario ? `https://www.instagram.com/${instagramUsuario}/` : '')
+---
+
+<Base titulo={`Vídeos — ${marca}`} descricao={descricao}>
+  <Menu marca={marca} especialidade={especialidade} pagina="videos" />
+
+  <main>
+    <section class="arquivo-intro">
+      <div class="container">
+        <p class="rotulo revelar">Arquivo</p>
+        <h1 class="titulo-secao revelar">Todos os vídeos</h1>
+        <p class="lead revelar">
+          O olhar completo — filtre e assista. O fechamento continua pelo WhatsApp.
+        </p>
+      </div>
+    </section>
+
+    <FilmesMasonry filmes={filmes} slugTenant={slugTenant} />
+    <FilmesVerticais filmes={filmes} slugTenant={slugTenant} />
+
+    <section class="cta-final" id="contato">
+      <div class="container">
+        <p class="rotulo revelar">Contato</p>
+        <h2 class="titulo-secao revelar">Gostou de algum vídeo?</h2>
+        <p class="lead revelar">Me conte a data e o clima que vocês querem. Respondo pelo WhatsApp.</p>
+        <div class="cta-final__acoes revelar">
+          {
+            whatsapp ? (
+              <a class="btn btn--wa" href={whatsapp} target="_blank" rel="noopener noreferrer">
+                Falar no WhatsApp
+              </a>
+            ) : (
+              <a class="btn btn--linha" href="/#contato">
+                Voltar ao início
+              </a>
+            )
+          }
+          <a class="btn btn--linha" href="/">Voltar ao início</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <p class="rodape__marca">{marca}</p>
+    <div class="rodape__links">
+      <a href="/">Início</a>
+      <a href="/filmes">Vídeos</a>
+      <a href="/#contato">Contato</a>
+      {
+        instagramUrl ? (
+          <a href={instagramUrl} target="_blank" rel="noopener noreferrer">
+            Instagram
+          </a>
+        ) : null
+      }
+    </div>
+    <p class="rodape__credito">
+      Desenvolvido por:{' '}
+      <a href="https://www.instagram.com/thiagaotap/" target="_blank" rel="noopener noreferrer"
+        >Thiago Albuquerque</a
+      >
+      {' · '}Estúdio Sites
+    </p>
+  </footer>
+
+  <Flutuantes whatsapp={whatsapp} />
+
+  <script>
+    document.documentElement.classList.add('js')
+    const observador = new IntersectionObserver(
+      (entradas) => {
+        for (const entrada of entradas) {
+          if (entrada.isIntersecting) {
+            entrada.target.toggleAttribute('data-visivel', true)
+            observador.unobserve(entrada.target)
+          }
+        }
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -8% 0px' },
+    )
+    document.querySelectorAll('.revelar').forEach((el) => observador.observe(el))
+  </script>
+</Base>
