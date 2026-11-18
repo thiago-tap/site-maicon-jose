@@ -1,12 +1,31 @@
 ---
 import '../styles/global.css'
+import { absoluto, truncarMeta } from '../lib/seo'
 
 type Props = {
   titulo: string
   descricao?: string
+  imagemOg?: string
+  caminhoCanonico?: string
+  /** JSON-LD objects (sem @context — o layout envelopa). */
+  dadosEstruturados?: Array<Record<string, unknown> | null | undefined>
+  semIndice?: boolean
 }
 
-const { titulo, descricao } = Astro.props
+const {
+  titulo,
+  descricao = titulo,
+  imagemOg,
+  caminhoCanonico,
+  dadosEstruturados = [],
+  semIndice = false,
+} = Astro.props
+
+const descricaoMeta = truncarMeta(descricao)
+const caminho = caminhoCanonico || Astro.url.pathname || '/'
+const canonica = absoluto(caminho)
+const ogImagem = imagemOg?.startsWith('http') ? imagemOg : imagemOg ? absoluto(imagemOg) : undefined
+const jsons = dadosEstruturados.filter(Boolean) as Record<string, unknown>[]
 ---
 
 <!doctype html>
@@ -14,17 +33,78 @@ const { titulo, descricao } = Astro.props
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content={descricao || titulo} />
-    <meta name="theme-color" content="#0b0b0d" />
     <title>{titulo}</title>
+    <meta name="description" content={descricaoMeta} />
+    {semIndice ? <meta name="robots" content="noindex, nofollow" /> : <meta name="robots" content="index, follow, max-image-preview:large" />}
+    <link rel="canonical" href={canonica} />
+    <meta name="theme-color" content="#0b0b0d" />
+    <meta name="author" content="Mayck Filmes" />
+    <meta name="geo.region" content="BR-DF" />
+    <meta name="geo.placename" content="Brasília" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:site_name" content="Mayck Filmes" />
+    <meta property="og:title" content={titulo} />
+    <meta property="og:description" content={descricaoMeta} />
+    <meta property="og:url" content={canonica} />
+    {
+      ogImagem ? (
+        <>
+          <meta property="og:image" content={ogImagem} />
+          <meta property="og:image:alt" content={titulo} />
+        </>
+      ) : null
+    }
+
+    <meta name="twitter:card" content={ogImagem ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:title" content={titulo} />
+    <meta name="twitter:description" content={descricaoMeta} />
+    {ogImagem ? <meta name="twitter:image" content={ogImagem} /> : null}
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Outfit:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
+
+    {
+      jsons.map((dados) => (
+        <script
+          is:inline
+          type="application/ld+json"
+          set:html={JSON.stringify({ '@context': 'https://schema.org', ...dados }).replace(/</g, '\\u003c')}
+        />
+      ))
+    }
   </head>
   <body>
-    <slot />
+    <a class="pular-conteudo" href="#conteudo">Pular para o conteúdo</a>
+    <div id="conteudo">
+      <slot />
+    </div>
   </body>
 </html>
+
+<style is:global>
+  .pular-conteudo {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+    padding: 0.75rem 1rem;
+    background: var(--ouro);
+    color: var(--noite);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .pular-conteudo:focus {
+    left: var(--pad);
+    top: 0.75rem;
+  }
+</style>
