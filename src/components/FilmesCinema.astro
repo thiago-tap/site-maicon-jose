@@ -36,7 +36,7 @@ const totalHorizontais = horizontais.length
     <p class="rotulo revelar">Portfólio</p>
     <h2 class="titulo-secao revelar">Filmes em destaque</h2>
     <p class="lead revelar">
-      Casamentos contados com emoção e estética de cinema — do teaser ao filme completo.
+      Filmes de casamento em Brasília-DF e destinos — do teaser ao filme completo, com estética de cinema.
     </p>
 
     <button
@@ -49,7 +49,9 @@ const totalHorizontais = horizontais.length
       aria-label={`Assistir ${destaque.titulo}`}
     >
       <div class="filme__capa">
-        {capaDestaque ? <img src={capaDestaque} alt="" loading="lazy" /> : null}
+        {capaDestaque ? (
+          <img src={capaDestaque} alt={`Capa do filme ${destaque.titulo}`} loading="lazy" width="1280" height="720" />
+        ) : null}
         <div class="filme__play">
           <span aria-hidden="true">
             <svg viewBox="0 0 24 24"><polygon points="8,5 20,12 8,19"></polygon></svg>
@@ -79,7 +81,9 @@ const totalHorizontais = horizontais.length
               aria-label={`Assistir ${filme.titulo}`}
             >
               <div class="filme__capa">
-                {capa ? <img src={capa} alt="" loading="lazy" /> : null}
+                {capa ? (
+                  <img src={capa} alt={`Capa do filme ${filme.titulo}`} loading="lazy" width="640" height="400" />
+                ) : null}
                 <div class="filme__play">
                   <span aria-hidden="true">
                     <svg viewBox="0 0 24 24"><polygon points="8,5 20,12 8,19"></polygon></svg>
