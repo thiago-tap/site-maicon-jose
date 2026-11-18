@@ -1,0 +1,95 @@
+---
+/**
+ * Grade de meses (como a agenda do Mikael), no visual Mayck.
+ * Meses consultáveis abrem WhatsApp com a data pedida.
+ */
+import {
+  agendaTemMeses,
+  anosParaExibir,
+  rotuloSituacao,
+  type AgendaVitrine,
+} from '../lib/agenda'
+import { linkWhatsapp, type Vitrine } from '../lib/vitrine'
+
+type Props = {
+  agenda?: AgendaVitrine | null
+  dados: Vitrine
+  compacto?: boolean
+}
+
+const { agenda, dados, compacto = false } = Astro.props
+const temMeses = agendaTemMeses(agenda)
+const anos = temMeses ? anosParaExibir(agenda?.anos || []) : []
+const periodo = anos.map((a) => a.ano).join(' · ')
+const legenda = ['disponivel', 'poucas-datas', 'esgotado', 'sem-info'] as const
+---
+
+{
+  temMeses ? (
+    <section class:list={['agenda-meses', compacto && 'agenda-meses--compacto']} id={compacto ? undefined : 'agenda'} aria-label="Agenda">
+      {!compacto ? (
+        <div class="container">
+          <p class="rotulo revelar">Agenda</p>
+          <h2 class="titulo-secao revelar">Datas {periodo || 'disponíveis'}</h2>
+          <p class="lead revelar">
+            Um panorama dos meses. A confirmação da data é sempre pelo WhatsApp — a reserva acontece com o contrato e o
+            sinal.
+          </p>
+        </div>
+      ) : null}
+
+      <div class:list={[compacto ? undefined : 'container']}>
+        <ul class="agenda-meses__legenda revelar" aria-label="Legenda">
+          {legenda.map((estado) => (
+            <li>
+              <span class="marca-agenda" data-estado={estado} aria-hidden="true" />
+              {rotuloSituacao(estado)}
+            </li>
+          ))}
+        </ul>
+
+        <div class="agenda-meses__anos">
+          {anos.map(({ ano, meses: lista }) => (
+            <section class="agenda-ano revelar" aria-labelledby={`ano-${ano}`}>
+              <h3 id={`ano-${ano}`} class="agenda-ano__titulo">
+                {ano}
+                <span aria-hidden="true" />
+              </h3>
+              <ul class="agenda-ano__grade">
+                {lista.map(({ mes, nome, estado, consultavel }) => {
+                  const waMes = consultavel
+                    ? linkWhatsapp(
+                        dados,
+                        `Olá, Mayck! Vi a agenda no site da Mayck Filmes e gostaria de consultar disponibilidade para ${nome.toLowerCase()} de ${ano}.`,
+                      )
+                    : null
+                  const corpo = (
+                    <>
+                      <span class="agenda-mes__nome">{nome}</span>
+                      <span class="agenda-mes__estado">
+                        <span class="marca-agenda" data-estado={estado} aria-hidden="true" />
+                        {rotuloSituacao(estado)}
+                      </span>
+                      {consultavel ? <span class="agenda-mes__cta">Consultar</span> : null}
+                    </>
+                  )
+                  return (
+                    <li class="agenda-mes" data-estado={estado}>
+                      {waMes ? (
+                        <a href={waMes} target="_blank" rel="noopener noreferrer" data-mes={`${mes}-${ano}`}>
+                          {corpo}
+                        </a>
+                      ) : (
+                        <div>{corpo}</div>
+                      )}
+                    </li>
+                  )
+                })}
+              </ul>
+            </section>
+          ))}
+        </div>
+      </div>
+    </section>
+  ) : null
+}
