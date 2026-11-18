@@ -1,3 +1,4 @@
+import { anoAberto } from '../lib/agenda'
 import type { Vitrine } from '../lib/vitrine'
 
 /** Conteúdo Mayck Filmes (questionário). Painel sobrescreve quando preenchido. */
@@ -59,6 +60,8 @@ export const fallback: Vitrine = {
   agenda: {
     ativo: true,
     texto: 'Agenda aberta para 2026 e 2027 — Consulte a disponibilidade da sua data.',
+    /** Até o painel ter meses reais: tudo aberto (meses passados viram “Encerrado” no site). */
+    anos: [anoAberto(2026), anoAberto(2027)],
   },
   comoFunciona: [
     {
@@ -226,5 +229,9 @@ export const fallback: Vitrine = {
       url: 'https://www.instagram.com/ohmayck/',
     },
     email: 'mayconjose76@gmail.com',
+    youtube: {
+      url: 'https://www.youtube.com/channel/UCxhpRLerYKeVUiKUzfP354g',
+      rotulo: 'Mayck Filmes',
+    },
   },
 }
