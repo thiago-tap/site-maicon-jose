@@ -1,11 +1,1 @@
-# size test
-abcdefghij
-abcdefghij
-abcdefghij
-abcdefghij
-abcdefghij
-abcdefghij
-abcdefghij
-abcdefghij
-abcdefghij
-abcdefghij
+deleted
