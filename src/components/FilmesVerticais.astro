@@ -1,8 +1,8 @@
 ---
 import {
+  capaDoFilme,
   filmesVerticais,
   metaDoFilme,
-  urlDaCapa,
   type FilmeVitrine,
 } from '../data/filmes'
 
@@ -21,7 +21,7 @@ const verticais = filmesVerticais(filmes)
         <p class="lead revelar">Trechos em 9:16 — o que roda bem no celular e no Instagram.</p>
         <div class="verticais__trilho" data-verticais-trilho>
           {verticais.map((filme, i) => {
-            const capa = urlDaCapa(filme, slugTenant)
+            const capa = capaDoFilme(filme, slugTenant, '(max-width: 640px) 45vw, 240px')
             const meta = metaDoFilme(filme)
             return (
               <button
@@ -35,7 +35,16 @@ const verticais = filmesVerticais(filmes)
               >
                 <div class="vertical__capa">
                   {capa ? (
-                    <img src={capa} alt={`Capa do filme ${filme.titulo}`} loading="lazy" width="360" height="640" />
+                    <img
+                      src={capa.src}
+                      srcset={capa.srcset}
+                      sizes={capa.sizes}
+                      alt={`Capa do filme ${filme.titulo}`}
+                      loading="lazy"
+                      decoding="async"
+                      width="360"
+                      height="640"
+                    />
                   ) : null}
                   <div class="filme__play">
                     <span aria-hidden="true">

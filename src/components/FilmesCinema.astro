@@ -4,12 +4,12 @@
  * Arquivo completo fica em /filmes (masonry).
  */
 import {
+  capaDoFilme,
   escolherDestaque,
   filmesDaGrade,
   metaDoFilme,
   rotulosTipoFilme,
   tipoDoFilme,
-  urlDaCapa,
   type FilmeVitrine,
 } from '../data/filmes'
 
@@ -24,7 +24,9 @@ const { filmes, slugTenant = 'maicon-jose', linkArquivo = '/filmes' } = Astro.pr
 const horizontais = filmes.filter((f) => tipoDoFilme(f) !== 'vertical')
 const destaque = escolherDestaque(horizontais)
 const grade = filmesDaGrade(horizontais, destaque, { incluirVerticais: false, max: 6 })
-const capaDestaque = destaque ? urlDaCapa(destaque, slugTenant) : undefined
+const capaDestaque = destaque
+  ? capaDoFilme(destaque, slugTenant, '(max-width: 900px) 100vw, 960px')
+  : undefined
 const metaDestaque = destaque ? metaDoFilme(destaque) : ''
 const totalHorizontais = horizontais.length
 ---
@@ -50,7 +52,16 @@ const totalHorizontais = horizontais.length
     >
       <div class="filme__capa">
         {capaDestaque ? (
-          <img src={capaDestaque} alt={`Capa do filme ${destaque.titulo}`} loading="lazy" width="1280" height="720" />
+          <img
+            src={capaDestaque.src}
+            srcset={capaDestaque.srcset}
+            sizes={capaDestaque.sizes}
+            alt={`Capa do filme ${destaque.titulo}`}
+            loading="lazy"
+            decoding="async"
+            width="1280"
+            height="720"
+          />
         ) : null}
         <div class="filme__play">
           <span aria-hidden="true">
@@ -67,7 +78,7 @@ const totalHorizontais = horizontais.length
       grade.length > 0 ? (
         <div class="grade-filmes">
           {grade.map((filme, i) => {
-            const capa = urlDaCapa(filme, slugTenant)
+            const capa = capaDoFilme(filme, slugTenant, '(max-width: 640px) 100vw, 33vw')
             const meta = metaDoFilme(filme)
             const tipo = tipoDoFilme(filme)
             return (
@@ -82,7 +93,16 @@ const totalHorizontais = horizontais.length
             >
               <div class="filme__capa">
                 {capa ? (
-                  <img src={capa} alt={`Capa do filme ${filme.titulo}`} loading="lazy" width="640" height="400" />
+                  <img
+                    src={capa.src}
+                    srcset={capa.srcset}
+                    sizes={capa.sizes}
+                    alt={`Capa do filme ${filme.titulo}`}
+                    loading="lazy"
+                    decoding="async"
+                    width="640"
+                    height="400"
+                  />
                 ) : null}
                 <div class="filme__play">
                   <span aria-hidden="true">

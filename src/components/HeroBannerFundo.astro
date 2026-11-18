@@ -50,8 +50,10 @@ const capaSrc =
           alt="Mayck Filmes — filmmaker de casamentos em Brasília"
           width="1920"
           height="1080"
+          sizes="100vw"
           decoding="async"
           fetchpriority="high"
+          loading="eager"
         />
       ) : null}
       <div class="hero__video" data-hero-video hidden></div>
@@ -88,12 +90,9 @@ const capaSrc =
         return desktopId || mobileId
       }
 
-      function aplicar() {
-        const raiz = document.querySelector('[data-hero-banner]')
-        if (!(raiz instanceof HTMLElement)) return
-        const palco = raiz.querySelector('[data-hero-video]')
-        if (!(palco instanceof HTMLElement)) return
+      let carregou = false
 
+      function montarIframe(raiz: HTMLElement, palco: HTMLElement) {
         const reduzir = window.matchMedia('(prefers-reduced-motion: reduce)').matches
         palco.replaceChildren()
         if (reduzir) {
@@ -112,16 +111,58 @@ const capaSrc =
         const iframe = document.createElement('iframe')
         iframe.src = montarEmbed(youtubeId)
         iframe.title = 'Vídeo de fundo'
-        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+        iframe.allow =
+          'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
         iframe.setAttribute('allowfullscreen', 'false')
         iframe.referrerPolicy = 'strict-origin-when-cross-origin'
         iframe.setAttribute('tabindex', '-1')
+        iframe.loading = 'lazy'
         palco.append(iframe)
         palco.hidden = false
         raiz.classList.add('hero__midia--video')
       }
 
-      aplicar()
+      function aplicar() {
+        const raiz = document.querySelector('[data-hero-banner]')
+        if (!(raiz instanceof HTMLElement)) return
+        const palco = raiz.querySelector('[data-hero-video]')
+        if (!(palco instanceof HTMLElement)) return
+        if (!carregou) return
+        montarIframe(raiz, palco)
+      }
+
+      function agendar() {
+        const raiz = document.querySelector('[data-hero-banner]')
+        if (!(raiz instanceof HTMLElement)) return
+
+        const ligar = () => {
+          if (carregou) return
+          carregou = true
+          aplicar()
+        }
+
+        const ocioso =
+          'requestIdleCallback' in window
+            ? (cb: () => void) => window.requestIdleCallback(cb, { timeout: 2500 })
+            : (cb: () => void) => window.setTimeout(cb, 1200)
+
+        if ('IntersectionObserver' in window) {
+          const io = new IntersectionObserver(
+            (entradas) => {
+              if (entradas.some((e) => e.isIntersecting)) {
+                io.disconnect()
+                ocioso(ligar)
+              }
+            },
+            { rootMargin: '80px' },
+          )
+          io.observe(raiz)
+        } else {
+          ocioso(ligar)
+        }
+      }
+
+      agendar()
       const mq = window.matchMedia('(max-width: 767px)')
       const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
       mq.addEventListener('change', aplicar)
