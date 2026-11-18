@@ -39,6 +39,16 @@ export type Vitrine = {
     estilo?: string
     numeros?: Array<{ valor: number; rotulo: string }>
   }
+  diferenciais?: Array<{
+    id: string
+    titulo: string
+    texto: string
+    ordem: number
+  }>
+  agenda?: {
+    ativo?: boolean
+    texto?: string
+  }
   comoFunciona?: Array<{
     id: string
     titulo: string
@@ -107,21 +117,61 @@ export async function buscarVitrine(): Promise<Vitrine> {
   }
 }
 
-/** Garante seções mínimas para a landing mesmo com tenant ainda vazio. */
+/** Seed de fotógrafo no painel ainda não trocado pela marca Mayck. */
+function aindaSeedFotografo(dados: Vitrine): boolean {
+  const especialidade = `${dados.identidade?.especialidade || ''} ${dados.inicio?.especialidade || ''}`
+  const sobre = `${dados.sobre?.resumo || ''} ${dados.sobre?.titulo || ''}`
+  return /fotografia|fotógrafo|fotografa/i.test(`${especialidade} ${sobre}`)
+}
+
+function pacotesProntos(pacotes: Vitrine['pacotes']): boolean {
+  if (!pacotes?.length || pacotes.length < 3) return false
+  return pacotes.every((p) => (p.itens?.length ?? 0) > 0 && p.nome?.trim())
+}
+
+/** Garante seções Mayck mesmo com tenant ainda no seed de fotógrafo. */
 function mesclarComFallback(dados: Vitrine): Vitrine {
+  const seedFoto = aindaSeedFotografo(dados)
+  const identidade = seedFoto
+    ? {
+        ...fallback.identidade,
+        cidade: dados.identidade?.cidade?.trim() || fallback.identidade?.cidade,
+        uf: dados.identidade?.uf?.trim() || fallback.identidade?.uf,
+      }
+    : { ...fallback.identidade, ...dados.identidade }
+
+  const inicio = seedFoto
+    ? {
+        ...fallback.inicio,
+        bannerVideo: dados.inicio?.bannerVideo || fallback.inicio?.bannerVideo,
+      }
+    : { ...fallback.inicio, ...dados.inicio }
+
+  const sobre = seedFoto
+    ? {
+        ...fallback.sobre,
+        numeros: dados.sobre?.numeros?.length ? dados.sobre.numeros : fallback.sobre?.numeros,
+      }
+    : {
+        ...fallback.sobre,
+        ...dados.sobre,
+        numeros: dados.sobre?.numeros?.length ? dados.sobre.numeros : fallback.sobre?.numeros,
+      }
+
   return {
     ...fallback,
     ...dados,
-    identidade: { ...fallback.identidade, ...dados.identidade },
-    inicio: { ...fallback.inicio, ...dados.inicio },
-    sobre: {
-      ...fallback.sobre,
-      ...dados.sobre,
-      numeros: dados.sobre?.numeros?.length ? dados.sobre.numeros : fallback.sobre?.numeros,
+    identidade,
+    inicio,
+    sobre,
+    diferenciais: dados.diferenciais?.length ? dados.diferenciais : fallback.diferenciais,
+    agenda: {
+      ativo: dados.agenda?.ativo ?? fallback.agenda?.ativo,
+      texto: dados.agenda?.texto?.trim() || fallback.agenda?.texto,
     },
     comoFunciona: dados.comoFunciona?.length ? dados.comoFunciona : fallback.comoFunciona,
     faq: dados.faq?.length ? dados.faq : fallback.faq,
-    pacotes: dados.pacotes?.length ? dados.pacotes : fallback.pacotes,
+    pacotes: pacotesProntos(dados.pacotes) ? dados.pacotes : fallback.pacotes,
     extras: dados.extras?.length ? dados.extras : fallback.extras,
     depoimentos: dados.depoimentos?.length ? dados.depoimentos : fallback.depoimentos,
     filmes: dados.filmes?.length ? dados.filmes : filmesFallback,
@@ -152,11 +202,17 @@ export function formatarPreco(valor: number): string {
   })
 }
 
+/** Preço 0 ou ausente = sob consulta (Mayck Filmes). */
+export function rotuloPreco(valor?: number | null): string {
+  if (valor == null || !Number.isFinite(valor) || valor <= 0) return 'Sob consulta'
+  return formatarPreco(valor)
+}
+
 export function marcaDoSite(dados: Vitrine): string {
   return (
     dados.identidade?.nomeDoSite?.trim() ||
     dados.identidade?.fotografo?.trim() ||
     dados.identidade?.primeiroNome?.trim() ||
-    'Maicon José'
+    'Mayck Filmes'
   )
 }
