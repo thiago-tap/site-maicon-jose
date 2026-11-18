@@ -5,6 +5,12 @@ import FilmesMasonry from '../components/FilmesMasonry.astro'
 import FilmesVerticais from '../components/FilmesVerticais.astro'
 import Flutuantes from '../components/Flutuantes.astro'
 import { filmesFallback } from '../data/filmes'
+import {
+  breadcrumbJsonLd,
+  dadosNegocioJsonLd,
+  imagemSocial,
+  urlDoSite,
+} from '../lib/seo'
 import { buscarVitrine, linkWhatsapp, marcaDoSite } from '../lib/vitrine'
 
 const dados = await buscarVitrine()
@@ -12,8 +18,8 @@ const marca = marcaDoSite(dados)
 const especialidade =
   dados.inicio?.especialidade?.trim() ||
   dados.identidade?.especialidade?.trim() ||
-  'Filmagem cinematográfica'
-const descricao = `Filmes de ${marca} — arquivo com casamentos, pré-wedding, civil e verticais.`
+  'Filmmaker de casamentos'
+const descricao = `Filmes de casamento cinematográficos de ${marca} em Brasília-DF — teasers, pré-wedding, civil e verticais. Assista e consulte a data.`
 const filmes = dados.filmes?.length ? dados.filmes : filmesFallback
 const slugTenant = dados.tenant?.slug?.trim() || 'maicon-jose'
 const whatsapp = linkWhatsapp(
@@ -24,9 +30,23 @@ const instagramUsuario = dados.contato?.instagram?.usuario?.replace(/^@/, '').tr
 const instagramUrl =
   dados.contato?.instagram?.url?.trim() ||
   (instagramUsuario ? `https://www.instagram.com/${instagramUsuario}/` : '')
+const titulo = `Filmes de casamento — ${marca} | Brasília-DF`
+const dadosEstruturados = [
+  dadosNegocioJsonLd(dados, `${urlDoSite()}/filmes`),
+  breadcrumbJsonLd([
+    { nome: 'Início', caminho: '/' },
+    { nome: 'Filmes', caminho: '/filmes' },
+  ]),
+]
 ---
 
-<Base titulo={`Filmes — ${marca}`} descricao={descricao}>
+<Base
+  titulo={titulo}
+  descricao={descricao}
+  imagemOg={imagemSocial(dados)}
+  caminhoCanonico="/filmes"
+  dadosEstruturados={dadosEstruturados}
+>
   <Menu marca={marca} especialidade={especialidade} pagina="videos" />
 
   <main>
