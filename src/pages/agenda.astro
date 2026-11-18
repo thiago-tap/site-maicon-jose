@@ -1,0 +1,95 @@
+---
+import Base from '../layouts/Base.astro'
+import Menu from '../components/Menu.astro'
+import AgendaMeses from '../components/AgendaMeses.astro'
+import Flutuantes from '../components/Flutuantes.astro'
+import { agendaTemMeses } from '../lib/agenda'
+import { buscarVitrine, linkWhatsapp, marcaDoSite } from '../lib/vitrine'
+
+const dados = await buscarVitrine()
+const marca = marcaDoSite(dados)
+const especialidade =
+  dados.inicio?.especialidade?.trim() ||
+  dados.identidade?.especialidade?.trim() ||
+  'Filmmaker de casamentos'
+const cidade = [dados.identidade?.cidade, dados.identidade?.uf].filter(Boolean).join(' / ')
+const descricao = `Veja os meses com datas disponíveis para filmagem de casamento${cidade ? ` em ${cidade}` : ''} e consulte pelo WhatsApp.`
+const whatsapp = linkWhatsapp(
+  dados,
+  'Olá, Mayck! Vi a agenda no site da Mayck Filmes e gostaria de consultar a disponibilidade da nossa data.',
+)
+const temAgenda = agendaTemMeses(dados.agenda)
+---
+
+<Base titulo={`Agenda · ${marca}`} descricao={descricao}>
+  <Menu marca={marca} especialidade={especialidade} pagina="agenda" />
+
+  <main>
+    {
+      temAgenda ? (
+        <AgendaMeses agenda={dados.agenda} dados={dados} />
+      ) : (
+        <section class="agenda-vazia">
+          <div class="container">
+            <p class="rotulo revelar">Agenda</p>
+            <h1 class="titulo-secao revelar">A agenda está sendo atualizada</h1>
+            <p class="lead revelar">Mande a data pelo WhatsApp e eu confirmo a disponibilidade.</p>
+          </div>
+        </section>
+      )
+    }
+
+    <section class="cta-final" id="contato">
+      <div class="container">
+        <p class="rotulo revelar">Contato</p>
+        <h2 class="titulo-secao revelar">Consultar minha data</h2>
+        <p class="lead revelar">A reserva acontece com o contrato e o sinal — a confirmação é pelo WhatsApp.</p>
+        <div class="cta-final__acoes revelar">
+          {
+            whatsapp ? (
+              <a class="btn btn--wa" href={whatsapp} target="_blank" rel="noopener noreferrer">
+                Falar no WhatsApp
+              </a>
+            ) : null
+          }
+          <a class="btn btn--linha" href="/#contato">
+            Formulário de contato
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <p class="rodape__marca">{marca}</p>
+    <div class="rodape__links">
+      <a href="/">Início</a>
+      <a href="/filmes">Filmes</a>
+      <a href="/agenda">Agenda</a>
+      <a href="/#contato">Contato</a>
+    </div>
+    <p class="rodape__credito">
+      Desenvolvido por:{' '}
+      <a href="https://www.instagram.com/thiagaotap/" target="_blank" rel="noopener noreferrer">Thiago Albuquerque</a>
+      {' · '}Estúdio Sites
+    </p>
+  </footer>
+
+  <Flutuantes whatsapp={whatsapp} />
+
+  <script>
+    document.documentElement.classList.add('js')
+    const observador = new IntersectionObserver(
+      (entradas) => {
+        for (const entrada of entradas) {
+          if (entrada.isIntersecting) {
+            entrada.target.toggleAttribute('data-visivel', true)
+            observador.unobserve(entrada.target)
+          }
+        }
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -8% 0px' },
+    )
+    document.querySelectorAll('.revelar').forEach((el) => observador.observe(el))
+  </script>
+</Base>
