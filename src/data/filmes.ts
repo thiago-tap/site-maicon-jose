@@ -48,24 +48,56 @@ export type FilmeVitrine = {
 /** Sem placeholders falsos: vazio até o painel devolver filmes. */
 export const filmesFallback: FilmeVitrine[] = []
 
+export type CapaImg = {
+  src: string
+  srcset?: string
+  sizes?: string
+}
+
+/** Thumbs YouTube responsivas (evita puxar maxres em mobile). */
+export function capaYoutube(youtubeId: string, sizes = '(max-width: 640px) 100vw, 640px'): CapaImg {
+  const id = encodeURIComponent(youtubeId)
+  return {
+    src: `https://i.ytimg.com/vi/${id}/hqdefault.jpg`,
+    srcset: [
+      `https://i.ytimg.com/vi/${id}/mqdefault.jpg 320w`,
+      `https://i.ytimg.com/vi/${id}/hqdefault.jpg 480w`,
+      `https://i.ytimg.com/vi/${id}/sddefault.jpg 640w`,
+    ].join(', '),
+    sizes,
+  }
+}
+
 /**
- * URL da capa para o <img>.
+ * Capa para o <img>.
  * `/api/midia/file/...` exige login (403). `/api/derivados/...` só depois dos
  * derivados existirem (senão 404). Enquanto não há `fontesAoVivo`, usa a thumb
  * pública do YouTube — sempre carrega no browser.
  */
 export function urlDaCapa(filme: FilmeVitrine, _slugTenant?: string): string | undefined {
-  const capa = filme.capa
-  const aoVivo = capa?.fontesAoVivo?.computador?.src || capa?.fontesAoVivo?.base?.src
-  if (aoVivo) return aoVivo
+  return capaDoFilme(filme, _slugTenant)?.src
+}
 
-  if (filme.youtubeId) {
-    return `https://i.ytimg.com/vi/${encodeURIComponent(filme.youtubeId)}/hqdefault.jpg`
+export function capaDoFilme(
+  filme: FilmeVitrine,
+  _slugTenant?: string,
+  sizes = '(max-width: 640px) 100vw, 640px',
+): CapaImg | undefined {
+  const capa = filme.capa
+  const aoVivo = capa?.fontesAoVivo?.computador || capa?.fontesAoVivo?.base
+  if (aoVivo?.src) {
+    return {
+      src: aoVivo.src,
+      srcset: aoVivo.srcset,
+      sizes: aoVivo.srcset ? sizes : undefined,
+    }
   }
+
+  if (filme.youtubeId) return capaYoutube(filme.youtubeId, sizes)
 
   const url = capa?.url?.trim()
   if (url && url !== '.' && !url.includes('/api/midia/file/') && !url.includes('/api/derivados/')) {
-    return url
+    return { src: url }
   }
   return undefined
 }

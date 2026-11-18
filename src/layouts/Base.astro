@@ -1,6 +1,9 @@
 ---
+import '../styles/fonts.css'
 import '../styles/global.css'
 import { absoluto, truncarMeta } from '../lib/seo'
+import outfitLatin from '@fontsource-variable/outfit/files/outfit-latin-wght-normal.woff2?url'
+import cormorant500 from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-500-normal.woff2?url'
 
 type Props = {
   titulo: string
@@ -64,11 +67,21 @@ const jsons = dadosEstruturados.filter(Boolean) as Record<string, unknown>[]
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://i.ytimg.com" crossorigin />
+    <link rel="dns-prefetch" href="https://www.youtube-nocookie.com" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Outfit:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      href={outfitLatin}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href={cormorant500}
+      as="font"
+      type="font/woff2"
+      crossorigin
     />
 
     {
