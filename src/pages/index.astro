@@ -250,4 +250,107 @@ const temAgenda = agendaTemMeses(dados.agenda)
 
     <section class="contato" id="contato">
       <div class="container contato__grid">
-        <motion-plACEHOLDER
+        <div class="contato__info">
+          <p class="rotulo revelar">Contato</p>
+          <h2 class="titulo-secao revelar">Vamos falar do seu filme?</h2>
+          <p class="contato__texto revelar">
+            Preencha o formulário e a mensagem já abre pronta no WhatsApp. Se preferir, chame direto pelo número, pelo
+            Instagram ou veja os filmes no YouTube.
+          </p>
+          <ContatoCanais
+            whatsappUrl={whatsapp}
+            whatsappExibicao={dados.contato?.whatsapp?.exibicao}
+            instagramUrl={instagramUrl}
+            instagramUsuario={instagramUsuario}
+            youtubeUrl={youtubeUrl}
+            youtubeRotulo={youtubeRotulo}
+            agendaAtiva={temAgenda}
+            agendaTexto={dados.agenda?.texto}
+          />
+          <p class="contato__nota revelar">Atendimento online — reuniões com horário agendado.</p>
+        </div>
+        <FormularioContato
+          numeroWhatsapp={dados.contato?.whatsapp?.numero}
+          pacotes={pacotes.map((p) => ({ id: p.id, nome: p.nome }))}
+        />
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <p class="rodape__marca">{marca}</p>
+    <div class="rodape__links">
+      <a href="#filmes">Filmes</a>
+      <a href="/filmes">Todos os filmes</a>
+      <a href="/agenda">Agenda</a>
+      <a href="#pacotes">Investimento</a>
+      <a href="#contato">Contato</a>
+      {
+        instagramUrl ? (
+          <a href={instagramUrl} target="_blank" rel="noopener noreferrer">
+            Instagram
+          </a>
+        ) : null
+      }
+    </div>
+    <p class="rodape__credito">
+      Desenvolvido por:{' '}
+      <a href="https://www.instagram.com/thiagaotap/" target="_blank" rel="noopener noreferrer"
+        >Thiago Albuquerque</a
+      >
+      {' · '}Estúdio Sites
+    </p>
+  </footer>
+
+  <Flutuantes whatsapp={whatsapp} />
+
+  <script>
+    document.documentElement.classList.add('js')
+
+    const nav = document.querySelector<HTMLElement>('[data-nav]')
+    function atualizarNav() {
+      nav?.toggleAttribute('data-solido', window.scrollY > 24)
+    }
+    window.addEventListener('scroll', atualizarNav, { passive: true })
+    atualizarNav()
+
+    const observador = new IntersectionObserver(
+      (entradas) => {
+        for (const entrada of entradas) {
+          if (entrada.isIntersecting) {
+            entrada.target.toggleAttribute('data-visivel', true)
+            observador.unobserve(entrada.target)
+          }
+        }
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -8% 0px' },
+    )
+    document.querySelectorAll('.revelar').forEach((el) => observador.observe(el))
+
+    const movimentoReduzido = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const numeros = document.querySelectorAll<HTMLElement>('[data-contar]')
+    if (numeros.length > 0 && !movimentoReduzido && 'IntersectionObserver' in window) {
+      const contar = new IntersectionObserver(
+        (entradas) => {
+          for (const entrada of entradas) {
+            if (!entrada.isIntersecting) continue
+            const el = entrada.target as HTMLElement
+            const alvo = Number(el.dataset.contar)
+            if (!Number.isFinite(alvo)) continue
+            const inicio = performance.now()
+            const duracao = 900
+            const tick = (agora: number) => {
+              const t = Math.min(1, (agora - inicio) / duracao)
+              el.textContent = String(Math.round(alvo * (1 - Math.pow(1 - t, 3))))
+              if (t < 1) requestAnimationFrame(tick)
+            }
+            requestAnimationFrame(tick)
+            contar.unobserve(el)
+          }
+        },
+        { threshold: 0.4 },
+      )
+      numeros.forEach((el) => contar.observe(el))
+    }
+  </script>
+</Base>
