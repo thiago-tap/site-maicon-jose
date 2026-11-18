@@ -4,6 +4,12 @@ import Menu from '../components/Menu.astro'
 import AgendaMeses from '../components/AgendaMeses.astro'
 import Flutuantes from '../components/Flutuantes.astro'
 import { agendaTemMeses } from '../lib/agenda'
+import {
+  breadcrumbJsonLd,
+  dadosNegocioJsonLd,
+  imagemSocial,
+  urlDoSite,
+} from '../lib/seo'
 import { buscarVitrine, linkWhatsapp, marcaDoSite } from '../lib/vitrine'
 
 const dados = await buscarVitrine()
@@ -13,15 +19,29 @@ const especialidade =
   dados.identidade?.especialidade?.trim() ||
   'Filmmaker de casamentos'
 const cidade = [dados.identidade?.cidade, dados.identidade?.uf].filter(Boolean).join(' / ')
-const descricao = `Veja os meses com datas disponíveis para filmagem de casamento${cidade ? ` em ${cidade}` : ''} e consulte pelo WhatsApp.`
+const descricao = `Agenda de filmagem de casamento${cidade ? ` em ${cidade}` : ''} — veja os meses disponíveis e consulte a data com ${marca} pelo WhatsApp.`
 const whatsapp = linkWhatsapp(
   dados,
   'Olá, Mayck! Vi a agenda no site da Mayck Filmes e gostaria de consultar a disponibilidade da nossa data.',
 )
 const temAgenda = agendaTemMeses(dados.agenda)
+const titulo = `Agenda e disponibilidade — ${marca} | Brasília-DF`
+const dadosEstruturados = [
+  dadosNegocioJsonLd(dados, `${urlDoSite()}/agenda`),
+  breadcrumbJsonLd([
+    { nome: 'Início', caminho: '/' },
+    { nome: 'Agenda', caminho: '/agenda' },
+  ]),
+]
 ---
 
-<Base titulo={`Agenda · ${marca}`} descricao={descricao}>
+<Base
+  titulo={titulo}
+  descricao={descricao}
+  imagemOg={imagemSocial(dados)}
+  caminhoCanonico="/agenda"
+  dadosEstruturados={dadosEstruturados}
+>
   <Menu marca={marca} especialidade={especialidade} pagina="agenda" />
 
   <main>
