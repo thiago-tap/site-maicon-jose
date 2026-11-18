@@ -1,5 +1,6 @@
 import { fallback } from '../data/fallback'
 import { filmesFallback, type FilmeVitrine } from '../data/filmes'
+import type { AgendaVitrine } from './agenda'
 
 /** Subconjunto do JSON público GET /api/site-vitrine/:slug usado nesta landing. */
 export type Vitrine = {
@@ -45,10 +46,7 @@ export type Vitrine = {
     texto: string
     ordem: number
   }>
-  agenda?: {
-    ativo?: boolean
-    texto?: string
-  }
+  agenda?: AgendaVitrine
   comoFunciona?: Array<{
     id: string
     titulo: string
@@ -94,6 +92,8 @@ export type Vitrine = {
     whatsapp?: { numero?: string; mensagem?: string; exibicao?: string }
     instagram?: { usuario?: string; url?: string }
     email?: string
+    /** Canal YouTube (sites Git / filmmaker). */
+    youtube?: { url?: string; rotulo?: string }
   }
   filmes?: FilmeVitrine[]
 }
@@ -166,8 +166,9 @@ function mesclarComFallback(dados: Vitrine): Vitrine {
     sobre,
     diferenciais: dados.diferenciais?.length ? dados.diferenciais : fallback.diferenciais,
     agenda: {
-      ativo: dados.agenda?.ativo ?? fallback.agenda?.ativo,
+      ativo: dados.agenda?.anos?.length ? Boolean(dados.agenda.ativo) : Boolean(fallback.agenda?.ativo),
       texto: dados.agenda?.texto?.trim() || fallback.agenda?.texto,
+      anos: dados.agenda?.anos?.length ? dados.agenda.anos : fallback.agenda?.anos,
     },
     comoFunciona: dados.comoFunciona?.length ? dados.comoFunciona : fallback.comoFunciona,
     faq: dados.faq?.length ? dados.faq : fallback.faq,
@@ -179,6 +180,7 @@ function mesclarComFallback(dados: Vitrine): Vitrine {
       whatsapp: { ...fallback.contato?.whatsapp, ...dados.contato?.whatsapp },
       instagram: { ...fallback.contato?.instagram, ...dados.contato?.instagram },
       email: dados.contato?.email || fallback.contato?.email,
+      youtube: { ...fallback.contato?.youtube, ...dados.contato?.youtube },
     },
   }
 }
