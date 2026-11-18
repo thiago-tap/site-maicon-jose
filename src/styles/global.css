@@ -1775,12 +1775,16 @@ body.cinema-aberto {
 .rodape__credito {
   margin: 0;
   font-size: 0.75rem;
-  color: #555;
+  color: var(--cinza);
 }
 
 .rodape__credito a {
   color: var(--cinza-claro);
   text-underline-offset: 0.18em;
+}
+
+.rodape__credito a:hover {
+  color: var(--ouro-claro);
 }
 
 /* —— Flutuantes (herdados do template) —— */
