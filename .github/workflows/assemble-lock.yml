@@ -1,0 +1,23 @@
+name: assemble-lock
+on:
+  workflow_dispatch:
+  push:
+    branches: [cursor/mayck-lighthouse-perf-32c7]
+    paths: ['.lock-parts/**']
+permissions:
+  contents: write
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assemble and commit lockfile
+        run: |
+          cat .lock-parts/00 .lock-parts/01 .lock-parts/02 .lock-parts/03 .lock-parts/04 .lock-parts/05 .lock-parts/06 .lock-parts/07 .lock-parts/08 .lock-parts/09 .lock-parts/10 .lock-parts/11 .lock-parts/12 > pnpm-lock.yaml
+          wc -c pnpm-lock.yaml
+          git config user.name "Thiago Albuquerque de Paula"
+          git config user.email "62264928+thiago-tap@users.noreply.github.com"
+          git add pnpm-lock.yaml
+          git diff --cached --quiet && echo nochange && exit 0
+          git commit -m "fix(mayck): lockfile completo com fontsource."
+          git push
