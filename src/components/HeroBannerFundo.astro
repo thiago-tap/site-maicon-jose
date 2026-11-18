@@ -44,7 +44,15 @@ const capaSrc =
       aria-hidden="true"
     >
       {capaSrc ? (
-        <img class="hero__capa" src={capaSrc} alt="" width="1920" height="1080" decoding="async" />
+        <img
+          class="hero__capa"
+          src={capaSrc}
+          alt="Mayck Filmes — filmmaker de casamentos em Brasília"
+          width="1920"
+          height="1080"
+          decoding="async"
+          fetchpriority="high"
+        />
       ) : null}
       <div class="hero__video" data-hero-video hidden></div>
     </div>

@@ -34,7 +34,9 @@ const verticais = filmesVerticais(filmes)
                 aria-label={`Assistir ${filme.titulo}`}
               >
                 <div class="vertical__capa">
-                  {capa ? <img src={capa} alt="" loading="lazy" /> : null}
+                  {capa ? (
+                    <img src={capa} alt={`Capa do filme ${filme.titulo}`} loading="lazy" width="360" height="640" />
+                  ) : null}
                   <div class="filme__play">
                     <span aria-hidden="true">
                       <svg viewBox="0 0 24 24">
