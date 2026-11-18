@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches: [cursor/mayck-lighthouse-perf-32c7]
-    paths: ['.lock-parts/**']
+    paths: ['.github/workflows/assemble-lock.yml', 'package.json']
 permissions:
   contents: write
 jobs:
@@ -11,14 +11,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Assemble and commit lockfile
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - name: Generate lockfile and commit
         run: |
           set -euo pipefail
-          : > pnpm-lock.yaml
-          for i in $(seq -f '%02g' 0 12); do
-            test -f ".lock-parts/$i.b64"
-            base64 -d ".lock-parts/$i.b64" >> pnpm-lock.yaml
-          done
+          rm -f pnpm-lock.yaml
+          pnpm install
           wc -c pnpm-lock.yaml
           grep -c fontsource pnpm-lock.yaml
           grep -q '@fontsource-variable/outfit' pnpm-lock.yaml
