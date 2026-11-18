@@ -1,0 +1,182 @@
+---
+/**
+ * Formulário que monta a mensagem e abre o WhatsApp (mesmo fluxo do Mikael).
+ * Não grava dados no servidor.
+ */
+type PacoteOpcao = { id: string; nome: string }
+
+type Props = {
+  numeroWhatsapp?: string | null
+  pacotes?: PacoteOpcao[]
+  abertura?: string
+}
+
+const {
+  numeroWhatsapp = '',
+  pacotes = [],
+  abertura =
+    'Olá, Mayck! Vim pelo site da Mayck Filmes e quero consultar a disponibilidade da data do nosso casamento.',
+} = Astro.props
+
+const numero = String(numeroWhatsapp || '').replace(/\D/g, '')
+const lista = [...pacotes].filter((p) => p.nome?.trim())
+---
+
+{
+  numero ? (
+    <form
+      class="form-contato revelar"
+      data-form-whatsapp
+      data-numero={numero}
+      data-abertura={abertura}
+      data-rotulo-nome="Casal"
+      novalidate
+    >
+      <div class="form-contato__campo">
+        <label for="nome">Nomes do casal</label>
+        <input id="nome" name="nome" type="text" required autocomplete="name" placeholder="Ana e Pedro" />
+      </div>
+
+      <div class="form-contato__grade">
+        <div class="form-contato__campo">
+          <label for="data">Data do casamento</label>
+          <input
+            id="data"
+            name="data"
+            type="text"
+            inputmode="numeric"
+            autocomplete="off"
+            maxlength="10"
+            placeholder="dd/mm/aaaa"
+            pattern="\d{2}/\d{2}/\d{4}"
+          />
+          <p class="form-contato__erro" role="alert" data-erro-data hidden>
+            Informe a data no formato dd/mm/aaaa.
+          </p>
+        </div>
+        <div class="form-contato__campo">
+          <label for="convidados">Número de convidados</label>
+          <input
+            id="convidados"
+            name="convidados"
+            type="text"
+            inputmode="numeric"
+            autocomplete="off"
+            maxlength="5"
+            placeholder="Ex.: 120"
+          />
+        </div>
+      </div>
+
+      <div class="form-contato__grade">
+        <div class="form-contato__campo">
+          <label for="cidade">Cidade</label>
+          <input id="cidade" name="cidade" type="text" placeholder="Onde vai ser" />
+        </div>
+        <div class="form-contato__campo">
+          <label for="pacote">Pacote de interesse</label>
+          <select id="pacote" name="pacote">
+            <option value="">Ainda não sei</option>
+            {lista.map((pacote) => (
+              <option value={pacote.nome}>{pacote.nome}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div class="form-contato__campo">
+        <label for="local">Local da cerimônia e da festa</label>
+        <input id="local" name="local" type="text" placeholder="Igreja, fazenda, salão…" />
+      </div>
+
+      <div class="form-contato__campo">
+        <label for="mensagem">Conte um pouco sobre vocês</label>
+        <textarea id="mensagem" name="mensagem" rows="4" placeholder="O que imaginam para o filme…"></textarea>
+      </div>
+
+      <p class="form-contato__erro" role="alert" data-erro hidden>
+        Informe os nomes do casal para continuar.
+      </p>
+
+      <button type="submit" class="btn btn--wa form-contato__enviar">
+        Enviar pelo WhatsApp
+      </button>
+    </form>
+  ) : (
+    <p class="lead" style="margin:0;text-align:left">
+      Configure o WhatsApp no painel para liberar o formulário.
+    </p>
+  )
+}
+
+<script>
+  const formulario = document.querySelector<HTMLFormElement>('[data-form-whatsapp]')
+  const erro = document.querySelector<HTMLElement>('[data-erro]')
+  const erroData = document.querySelector<HTMLElement>('[data-erro-data]')
+  const campoData = document.querySelector<HTMLInputElement>('#data')
+  const campoConvidados = document.querySelector<HTMLInputElement>('#convidados')
+
+  function mascararData(valor: string): string {
+    const digitos = valor.replace(/\D/g, '').slice(0, 8)
+    return [digitos.slice(0, 2), digitos.slice(2, 4), digitos.slice(4)].filter(Boolean).join('/')
+  }
+
+  function dataValida(valor: string): boolean {
+    const partes = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(valor)
+    if (!partes) return false
+    const [dia, mes, ano] = partes.slice(1).map(Number)
+    const data = new Date(ano!, mes! - 1, dia)
+    return data.getFullYear() === ano && data.getMonth() === mes! - 1 && data.getDate() === dia
+  }
+
+  campoData?.addEventListener('input', () => {
+    const mascarado = mascararData(campoData.value)
+    if (mascarado !== campoData.value) campoData.value = mascarado
+  })
+
+  campoConvidados?.addEventListener('input', () => {
+    const digitos = campoConvidados.value.replace(/\D/g, '')
+    if (digitos !== campoConvidados.value) campoConvidados.value = digitos
+  })
+
+  formulario?.addEventListener('submit', (evento) => {
+    evento.preventDefault()
+    const dados = new FormData(formulario)
+    const valor = (campo: string) => String(dados.get(campo) ?? '').trim()
+
+    if (!valor('nome')) {
+      erro?.removeAttribute('hidden')
+      formulario.querySelector<HTMLInputElement>('#nome')?.focus()
+      return
+    }
+    erro?.setAttribute('hidden', '')
+
+    if (valor('data') && !dataValida(valor('data'))) {
+      erroData?.removeAttribute('hidden')
+      campoData?.focus()
+      return
+    }
+    erroData?.setAttribute('hidden', '')
+
+    const detalhes: [string, string][] = [
+      [formulario.dataset.rotuloNome ?? 'Casal', valor('nome')],
+      ['Data', valor('data')],
+      ['Convidados', valor('convidados')],
+      ['Cidade', valor('cidade')],
+      ['Local', valor('local')],
+      ['Pacote', valor('pacote')],
+    ]
+
+    const texto = [
+      formulario.dataset.abertura ?? '',
+      '',
+      ...detalhes.filter(([, conteudo]) => conteudo).map(([rotulo, conteudo]) => `*${rotulo}:* ${conteudo}`),
+      ...(valor('mensagem') ? ['', valor('mensagem')] : []),
+    ].join('\n')
+
+    const url = `https://wa.me/${formulario.dataset.numero}?text=${encodeURIComponent(texto)}`
+    const janela = window.open(url, '_blank')
+    if (janela) janela.opener = null
+    else location.href = url
+  })
+</script>
