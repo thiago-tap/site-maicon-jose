@@ -1,0 +1,29 @@
+name: promote-to-main
+on:
+  workflow_dispatch:
+  push:
+    branches: [cursor/mayck-lighthouse-perf-32c7]
+    paths: ['.github/workflows/promote-to-main.yml']
+permissions:
+  contents: write
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push tip onto main
+        run: |
+          set -euo pipefail
+          git config user.name "Thiago Albuquerque de Paula"
+          git config user.email "62264928+thiago-tap@users.noreply.github.com"
+          # Verify lockfile before promote
+          wc -c pnpm-lock.yaml
+          grep -q '@fontsource-variable/outfit' pnpm-lock.yaml
+          grep -q "@fontsource-variable/outfit" package.json
+          grep -q "fontsource-variable/outfit" src/layouts/Base.astro
+          test -f src/styles/fonts.css
+          git push origin "HEAD:main"
+          echo "promoted $(git rev-parse HEAD) to main"
