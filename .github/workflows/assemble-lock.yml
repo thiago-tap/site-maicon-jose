@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches: [cursor/mayck-lighthouse-perf-32c7]
-    paths: ['.lock-parts/**', '.github/workflows/assemble-lock.yml']
+    paths: ['.lock-parts/**']
 permissions:
   contents: write
 jobs:
@@ -11,11 +11,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Download and commit lockfile
+      - name: Assemble and commit lockfile
         run: |
           set -euo pipefail
-          curl -fsSL -o pnpm-lock.yaml \
-            "https://raw.githubusercontent.com/thiago-tap/plataforma-fotografos/45c7863/docs/clientes/_artifacts/maicon-jose-pnpm-lock.yaml"
+          : > pnpm-lock.yaml
+          for i in $(seq -f '%02g' 0 12); do
+            test -f ".lock-parts/$i.b64"
+            base64 -d ".lock-parts/$i.b64" >> pnpm-lock.yaml
+          done
           wc -c pnpm-lock.yaml
           grep -c fontsource pnpm-lock.yaml
           grep -q '@fontsource-variable/outfit' pnpm-lock.yaml
