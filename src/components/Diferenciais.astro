@@ -1,0 +1,38 @@
+---
+type Item = {
+  id: string
+  titulo: string
+  texto: string
+  ordem: number
+}
+
+type Props = { itens: Item[] }
+
+const { itens } = Astro.props
+const lista = [...itens].sort((a, b) => a.ordem - b.ordem)
+---
+
+{
+  lista.length > 0 ? (
+    <section class="diferenciais" id="diferenciais">
+      <div class="container">
+        <p class="rotulo revelar">Estilo</p>
+        <h2 class="titulo-secao revelar">O que torna o filme Mayck</h2>
+        <p class="lead revelar">
+          Direcionamento leve, estética de cinema e áudio que guarda a emoção do dia.
+        </p>
+        <ul class="diferenciais__grade">
+          {lista.map((item, i) => (
+            <li class={`diferenciais__item revelar revelar--${Math.min(i, 3)}`}>
+              <span class="diferenciais__indice" aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <h3>{item.titulo}</h3>
+              <p>{item.texto}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  ) : null
+}

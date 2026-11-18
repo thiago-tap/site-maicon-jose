@@ -17,9 +17,9 @@ const lista = [...etapas].sort((a, b) => a.ordem - b.ordem)
   lista.length > 0 ? (
     <section class="processo" id="processo">
       <div class="container">
-        <p class="rotulo revelar">Método</p>
+        <p class="rotulo revelar">Processo</p>
         <h2 class="titulo-secao revelar">Como filmamos</h2>
-        <p class="lead revelar">Do primeiro oi à entrega do vídeo — sem surpresas.</p>
+        <p class="lead revelar">Do primeiro WhatsApp à entrega do filme em 4K — sem surpresas.</p>
         <ol class="processo__lista">
           {lista.map((etapa, i) => (
             <li class={`processo__item revelar revelar--${Math.min(i, 3)}`}>

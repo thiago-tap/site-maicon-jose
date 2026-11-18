@@ -3,12 +3,22 @@
  * Sem itens na vitrine, a seção some no site.
  */
 
-export const tiposFilme = ['teaser', 'casamento', 'making-of', 'vertical', 'outro'] as const
+export const tiposFilme = [
+  'teaser',
+  'casamento',
+  'pre-wedding',
+  'civil',
+  'making-of',
+  'vertical',
+  'outro',
+] as const
 export type TipoFilme = (typeof tiposFilme)[number]
 
 export const rotulosTipoFilme: Record<TipoFilme, string> = {
   teaser: 'Teaser',
   casamento: 'Casamento',
+  'pre-wedding': 'Pré-wedding',
+  civil: 'Casamento civil',
   'making-of': 'Making of',
   vertical: 'Vertical',
   outro: 'Outro',

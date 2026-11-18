@@ -17,8 +17,7 @@ const naHome = pagina === 'inicio'
 const prefixo = naHome ? '' : '/'
 
 const itens = [
-  { id: 'videos' as const, rotulo: 'Vídeos', href: naHome ? '#filmes' : '/filmes' },
-  { id: 'processo' as const, rotulo: 'Processo', href: `${prefixo}#processo` },
+  { id: 'videos' as const, rotulo: 'Filmes', href: naHome ? '#filmes' : '/filmes' },
   { id: 'sobre' as const, rotulo: 'Sobre', href: `${prefixo}#sobre` },
   { id: 'investimento' as const, rotulo: 'Investimento', href: `${prefixo}#pacotes` },
   { id: 'contato' as const, rotulo: 'Contato', href: `${prefixo}#contato` },
