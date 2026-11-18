@@ -13,24 +13,27 @@ const especialidade =
   dados.inicio?.especialidade?.trim() ||
   dados.identidade?.especialidade?.trim() ||
   'Filmagem cinematográfica'
-const descricao = `Vídeos de ${marca} — arquivo completo com teasers, casamentos, making of e verticais.`
+const descricao = `Filmes de ${marca} — arquivo com casamentos, pré-wedding, civil e verticais.`
 const filmes = dados.filmes?.length ? dados.filmes : filmesFallback
 const slugTenant = dados.tenant?.slug?.trim() || 'maicon-jose'
-const whatsapp = linkWhatsapp(dados, 'Olá! Vi os vídeos no site e gostaria de conversar.')
+const whatsapp = linkWhatsapp(
+  dados,
+  'Olá, Mayck! Vi os filmes no site da Mayck Filmes e gostaria de conversar sobre disponibilidade.',
+)
 const instagramUsuario = dados.contato?.instagram?.usuario?.replace(/^@/, '').trim()
 const instagramUrl =
   dados.contato?.instagram?.url?.trim() ||
   (instagramUsuario ? `https://www.instagram.com/${instagramUsuario}/` : '')
 ---
 
-<Base titulo={`Vídeos — ${marca}`} descricao={descricao}>
+<Base titulo={`Filmes — ${marca}`} descricao={descricao}>
   <Menu marca={marca} especialidade={especialidade} pagina="videos" />
 
   <main>
     <section class="arquivo-intro">
       <div class="container">
         <p class="rotulo revelar">Arquivo</p>
-        <h1 class="titulo-secao revelar">Todos os vídeos</h1>
+        <h1 class="titulo-secao revelar">Todos os filmes</h1>
         <p class="lead revelar">
           O olhar completo — filtre e assista. O fechamento continua pelo WhatsApp.
         </p>
@@ -43,7 +46,7 @@ const instagramUrl =
     <section class="cta-final" id="contato">
       <div class="container">
         <p class="rotulo revelar">Contato</p>
-        <h2 class="titulo-secao revelar">Gostou de algum vídeo?</h2>
+        <h2 class="titulo-secao revelar">Gostou de algum filme?</h2>
         <p class="lead revelar">Me conte a data e o clima que vocês querem. Respondo pelo WhatsApp.</p>
         <div class="cta-final__acoes revelar">
           {
@@ -67,7 +70,7 @@ const instagramUrl =
     <p class="rodape__marca">{marca}</p>
     <div class="rodape__links">
       <a href="/">Início</a>
-      <a href="/filmes">Vídeos</a>
+      <a href="/filmes">Filmes</a>
       <a href="/#contato">Contato</a>
       {
         instagramUrl ? (
