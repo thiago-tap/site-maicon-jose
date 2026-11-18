@@ -1,0 +1,19 @@
+---
+type Props = {
+  ativo?: boolean
+  texto?: string
+}
+
+const { ativo = false, texto = '' } = Astro.props
+const mensagem = texto.trim()
+---
+
+{
+  ativo && mensagem ? (
+    <aside class="agenda-faixa" aria-label="Agenda">
+      <div class="container">
+        <p class="agenda-faixa__texto revelar">{mensagem}</p>
+      </div>
+    </aside>
+  ) : null
+}
