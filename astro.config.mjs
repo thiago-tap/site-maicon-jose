@@ -12,7 +12,13 @@ const tenant = (process.env.SITE_TENANT || '').trim()
 const urlDaVitrine =
   painel && tenant ? `${painel}/api/site-vitrine/${encodeURIComponent(tenant)}` : ''
 
+const urlPublica = (process.env.SITE_PUBLIC_URL || 'https://site-maicon-jose.catiteo.workers.dev').replace(
+  /\/+$/,
+  '',
+)
+
 export default defineConfig({
+  site: urlPublica,
   output: 'server',
   adapter: cloudflare({
     imageService: 'passthrough',
@@ -24,6 +30,7 @@ export default defineConfig({
     define: {
       'import.meta.env.SITE_VITRINE_URL': JSON.stringify(urlDaVitrine),
       'import.meta.env.SITE_TENANT': JSON.stringify(tenant),
+      'import.meta.env.SITE_PUBLIC_URL': JSON.stringify(urlPublica),
     },
   },
 })
