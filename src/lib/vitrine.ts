@@ -98,19 +98,74 @@ export type Vitrine = {
   filmes?: FilmeVitrine[]
 }
 
+/** TTL do JSON da vitrine no Cache API do Worker (corta TTFB nas visitas seguintes). */
+const CACHE_VITRINE_SEGUNDOS = 90
+
+type CacheGlobal = { default?: { match: (req: Request) => Promise<Response | undefined>; put: (req: Request, res: Response) => Promise<void> } }
+
+function cacheDoWorker(): CacheGlobal['default'] | undefined {
+  return (globalThis as unknown as { caches?: CacheGlobal }).caches?.default
+}
+
+async function vitrineDoCache(url: string): Promise<Vitrine | null> {
+  const cache = cacheDoWorker()
+  if (!cache) return null
+  try {
+    const hit = await cache.match(new Request(url))
+    if (!hit?.ok) return null
+    return (await hit.json()) as Vitrine
+  } catch {
+    return null
+  }
+}
+
+async function guardarVitrineNoCache(url: string, dados: Vitrine): Promise<void> {
+  const cache = cacheDoWorker()
+  if (!cache) return
+  try {
+    await cache.put(
+      new Request(url),
+      new Response(JSON.stringify(dados), {
+        headers: {
+          'content-type': 'application/json',
+          'cache-control': `public, max-age=${CACHE_VITRINE_SEGUNDOS}`,
+        },
+      }),
+    )
+  } catch {
+    /* Cache API indisponível (dev/preview) — segue sem cache. */
+  }
+}
+
+/** Painel ainda manda “Olá, Maicon!” — alinha à marca Mayck no site. */
+export function normalizarMensagemWhatsapp(mensagem: string): string {
+  return mensagem
+    .replace(/\bOlá,\s*Maicon!/gi, 'Olá, Mayck!')
+    .replace(/\bOi,\s*Maicon!/gi, 'Oi, Mayck!')
+    .replace(/\bHello,\s*Maicon!/gi, 'Hello, Mayck!')
+}
+
 /**
  * Busca a vitrine ao vivo. Se falhar (build local sem env, painel fora), usa fallback.
+ * No Worker: Cache API ~90s para não bater no painel a cada HTML.
  */
 export async function buscarVitrine(): Promise<Vitrine> {
   const url = typeof import.meta.env.SITE_VITRINE_URL === 'string' ? import.meta.env.SITE_VITRINE_URL : ''
   if (!url) return fallback
+
+  const emCache = await vitrineDoCache(url)
+  if (emCache) return mesclarComFallback(emCache)
+
   try {
     const resposta = await fetch(url, {
       headers: { accept: 'application/json' },
       signal: AbortSignal.timeout(2_500),
-    })
+      // Cloudflare: cacheia o subrequest na borda quando disponível.
+      cf: { cacheTtl: CACHE_VITRINE_SEGUNDOS, cacheEverything: true },
+    } as RequestInit)
     if (!resposta.ok) return fallback
     const dados = (await resposta.json()) as Vitrine
+    await guardarVitrineNoCache(url, dados)
     return mesclarComFallback(dados)
   } catch {
     return fallback
@@ -177,7 +232,15 @@ function mesclarComFallback(dados: Vitrine): Vitrine {
     depoimentos: dados.depoimentos?.length ? dados.depoimentos : fallback.depoimentos,
     filmes: dados.filmes?.length ? dados.filmes : filmesFallback,
     contato: {
-      whatsapp: { ...fallback.contato?.whatsapp, ...dados.contato?.whatsapp },
+      whatsapp: {
+        ...fallback.contato?.whatsapp,
+        ...dados.contato?.whatsapp,
+        mensagem: normalizarMensagemWhatsapp(
+          dados.contato?.whatsapp?.mensagem?.trim() ||
+            fallback.contato?.whatsapp?.mensagem ||
+            '',
+        ),
+      },
       instagram: { ...fallback.contato?.instagram, ...dados.contato?.instagram },
       email: dados.contato?.email || fallback.contato?.email,
       youtube: { ...fallback.contato?.youtube, ...dados.contato?.youtube },
@@ -189,9 +252,11 @@ export function linkWhatsapp(vitrine: Vitrine, mensagemExtra?: string): string |
   const numero = vitrine.contato?.whatsapp?.numero?.replace(/\D/g, '')
   if (!numero) return null
   const mensagem = encodeURIComponent(
-    mensagemExtra?.trim() ||
-      vitrine.contato?.whatsapp?.mensagem?.trim() ||
-      'Olá! Vi o site e gostaria de conversar.',
+    normalizarMensagemWhatsapp(
+      mensagemExtra?.trim() ||
+        vitrine.contato?.whatsapp?.mensagem?.trim() ||
+        'Olá, Mayck! Vi o site da Mayck Filmes e gostaria de conversar.',
+    ),
   )
   return `https://wa.me/${numero}?text=${mensagem}`
 }
