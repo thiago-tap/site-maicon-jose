@@ -70,7 +70,9 @@ const temFiltros = tipos.length > 1
             aria-label={`Assistir ${filme.titulo}`}
           >
             <div class="masonry__capa" style={`aspect-ratio: ${proporcaoDoIndice(i)}`}>
-              {capa ? <img src={capa} alt="" loading="lazy" /> : null}
+              {capa ? (
+                <img src={capa} alt={`Capa do filme ${filme.titulo}`} loading="lazy" width="640" height="800" />
+              ) : null}
               <div class="filme__play">
                 <span aria-hidden="true">
                   <svg viewBox="0 0 24 24">
