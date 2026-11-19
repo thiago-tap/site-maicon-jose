@@ -1,1 +1,2 @@
-@file:/tmp/maicon/site/src/styles/global.css
+@import './global-part-a.css';
+@import './global-part-b.css';
