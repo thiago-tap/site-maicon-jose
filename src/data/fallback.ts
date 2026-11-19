@@ -29,7 +29,7 @@ export const fallback: Vitrine = {
     resumo:
       'Sou Maicon José, mas pode me chamar de Mayck. À frente da Mayck Filmes, transformo o grande dia em uma memória viva, clássica e cinematográfica.',
     apresentacao:
-      'Sou Maicon José, mas pode me chamar de Mayck. À frente da Mayck Filmes, dedico meu olhar a transformar um dos dias mais importantes da vida de um casal em uma memória viva, clássica e cinematográfica.\n\nAcredito que um bom filme de casamento vai muito além de câmeras e movimentos bonitos: ele precisa ter alma. Por isso, meu trabalho começa antes mesmo do “sim”, criando um ambiente leve e acolhedor para que vocês se sintam à vontade, sem poses forçadas. Cada sorriso espontâneo, o nervosismo no making of e o som real dos votos são registrados com discrição e sensibilidade para que, daqui a 20 anos, vocês sintam exatamente a mesma emoção ao apertar o play.\n\nBaseado em Brasília-DF e disponível para casamentos em todo o Brasil e no exterior, entrego uma experiência personalizada, com atendimento próximo, pontualidade e entrega rigorosa dentro do prazo acordado.',
+      'Sou Maicon José, mas pode me chamar de Mayck. À frente da Mayck Filmes, dedico meu olhar a transformar um dos dias mais importantes da vida de um casal em uma memória viva, clássica e cinematográfica.\n\nAcredito que um bom filme de casamento vai muito além de câmeras e movimentos bonitos: ele precisa ter alma. Por isso, meu trabalho começa antes mesmo do “sim”, criando um ambiente leve e acolhedor para que vocês se sintam à vontade, sem poses forçadas. Cada sorriso espontâneo, o nervosismo no making of e o som real dos votos são registrados com discreção e sensibilidade para que, daqui a 20 anos, vocês sintam exatamente a mesma emoção ao apertar o play.\n\nBaseado em Brasília-DF e disponível para casamentos em todo o Brasil e no exterior, entrego uma experiência personalizada, com atendimento próximo, pontualidade e entrega rigorosa dentro do prazo acordado.',
     estilo:
       'Híbrido (cinematic + documental) — movimentos suaves, drone estratégico, foco na história e nos votos.',
     numeros: [],
@@ -139,6 +139,7 @@ export const fallback: Vitrine = {
       nome: 'Essencial',
       ordem: 1,
       preco: 0,
+      sobConsulta: true,
       cobertura: 'Casamento civil / mini wedding',
       chamada: 'Cerimônia e recepção íntima com olhar de cinema',
       mensagemWhatsapp:
@@ -158,6 +159,7 @@ export const fallback: Vitrine = {
       nome: 'Clássico',
       ordem: 2,
       preco: 0,
+      sobConsulta: true,
       cobertura: 'Making of, cerimônia e festa',
       chamada: 'Cobertura completa com drone e trailer',
       mensagemWhatsapp:
@@ -178,6 +180,7 @@ export const fallback: Vitrine = {
       nome: 'Cinema & Legado',
       ordem: 3,
       preco: 0,
+      sobConsulta: true,
       cobertura: 'Experiência completa',
       chamada: 'Pré-wedding, 2 filmmakers e entrega expressa',
       mensagemWhatsapp:

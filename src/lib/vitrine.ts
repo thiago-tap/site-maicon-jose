@@ -79,6 +79,7 @@ export type Vitrine = {
     nome: string
     ordem: number
     preco: number
+    sobConsulta?: boolean
     cobertura?: string
     chamada?: string
     mensagemWhatsapp?: string
@@ -284,8 +285,8 @@ export function formatarPreco(valor: number): string {
 }
 
 /** Preço 0 ou ausente = sob consulta (Mayck Filmes). */
-export function rotuloPreco(valor?: number | null): string {
-  if (valor == null || !Number.isFinite(valor) || valor <= 0) return 'Sob consulta'
+export function rotuloPreco(valor?: number | null, sobConsulta?: boolean): string {
+  if (sobConsulta || valor == null || !Number.isFinite(valor) || valor <= 0) return 'Sob consulta'
   return formatarPreco(valor)
 }
 

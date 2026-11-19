@@ -215,7 +215,7 @@ const dadosEstruturados = [
                 >
                   {pacote.selo ? <p class="pacote__selo">{pacote.selo}</p> : null}
                   <h3 class="pacote__nome">{pacote.nome}</h3>
-                  <p class="pacote__preco">{rotuloPreco(pacote.preco)}</p>
+                  <p class="pacote__preco">{rotuloPreco(pacote.preco, pacote.sobConsulta)}</p>
                   {pacote.chamada ? <p class="pacote__chamada">{pacote.chamada}</p> : null}
                   <ul class="pacote__itens">
                     {pacote.itens.map((item) => (
