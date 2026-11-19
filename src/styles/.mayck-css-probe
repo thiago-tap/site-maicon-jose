@@ -1,5 +1,0 @@
-/* —— Nav —— */
-.hero__video iframe {
-  height: 177.78vw; /* cover 9:16-ish on tall screens */
-  min-width: 100%;
-}
