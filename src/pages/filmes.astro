@@ -46,6 +46,11 @@ const dadosEstruturados = [
   imagemOg={imagemSocial(dados)}
   caminhoCanonico="/filmes"
   dadosEstruturados={dadosEstruturados}
+  marcaSite={marca}
+  cidade={dados.identidade?.cidade || 'Brasília'}
+  uf={dados.identidade?.uf || 'DF'}
+  gaId={dados.analytics?.gaId?.trim() || ''}
+  gtmId={dados.analytics?.gtmId?.trim() || ''}
 >
   <Menu marca={marca} especialidade={especialidade} pagina="videos" />
 

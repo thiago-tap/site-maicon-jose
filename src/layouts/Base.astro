@@ -1,6 +1,8 @@
 ---
 import '../styles/fonts.css'
 import '../styles/global.css'
+import Consentimento from '../components/Consentimento.astro'
+import TagsGoogle from '../components/TagsGoogle.astro'
 import { absoluto, truncarMeta } from '../lib/seo'
 import outfitLatin from '@fontsource-variable/outfit/files/outfit-latin-wght-normal.woff2?url'
 import cormorant500 from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-500-normal.woff2?url'
@@ -13,6 +15,11 @@ type Props = {
   /** JSON-LD objects (sem @context — o layout envelopa). */
   dadosEstruturados?: Array<Record<string, unknown> | null | undefined>
   semIndice?: boolean
+  marcaSite?: string
+  cidade?: string
+  uf?: string
+  gaId?: string
+  gtmId?: string
 }
 
 const {
@@ -22,6 +29,11 @@ const {
   caminhoCanonico,
   dadosEstruturados = [],
   semIndice = false,
+  marcaSite = 'Mayck Filmes',
+  cidade = 'Brasília',
+  uf = 'DF',
+  gaId = '',
+  gtmId = '',
 } = Astro.props
 
 const descricaoMeta = truncarMeta(descricao)
@@ -41,13 +53,13 @@ const jsons = dadosEstruturados.filter(Boolean) as Record<string, unknown>[]
     {semIndice ? <meta name="robots" content="noindex, nofollow" /> : <meta name="robots" content="index, follow, max-image-preview:large" />}
     <link rel="canonical" href={canonica} />
     <meta name="theme-color" content="#0b0b0d" />
-    <meta name="author" content="Mayck Filmes" />
-    <meta name="geo.region" content="BR-DF" />
-    <meta name="geo.placename" content="Brasília" />
+    <meta name="author" content={marcaSite} />
+    <meta name="geo.region" content={`BR-${uf}`} />
+    <meta name="geo.placename" content={cidade} />
 
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="pt_BR" />
-    <meta property="og:site_name" content="Mayck Filmes" />
+    <meta property="og:site_name" content={marcaSite} />
     <meta property="og:title" content={titulo} />
     <meta property="og:description" content={descricaoMeta} />
     <meta property="og:url" content={canonica} />
@@ -84,6 +96,8 @@ const jsons = dadosEstruturados.filter(Boolean) as Record<string, unknown>[]
       crossorigin
     />
 
+    <TagsGoogle onde="head" gaId={gaId} gtmId={gtmId} />
+
     {
       jsons.map((dados) => (
         <script
@@ -99,6 +113,8 @@ const jsons = dadosEstruturados.filter(Boolean) as Record<string, unknown>[]
     <div id="conteudo">
       <slot />
     </div>
+    <TagsGoogle onde="body" gaId={gaId} gtmId={gtmId} />
+    <Consentimento gaId={gaId} gtmId={gtmId} />
   </body>
 </html>
 
