@@ -5,6 +5,7 @@ import type { Vitrine } from '../lib/vitrine'
 export const fallback: Vitrine = {
   tenant: { slug: 'maicon-jose', nome: 'Mayck Filmes' },
   identidade: {
+    nome: 'Mayck Filmes',
     nomeDoSite: 'Mayck Filmes',
     primeiroNome: 'Mayck',
     fotografo: 'Mayck Filmes',
@@ -15,7 +16,9 @@ export const fallback: Vitrine = {
     uf: 'DF',
     descricao:
       'Mayck Filmes: filmes de casamento cinematográficos, clássicos e acolhedores em Brasília-DF e destinos. Peça seu orçamento e eternize seu grande dia.',
+    tituloSeo: 'Mayck Filmes | Filmmaker de Casamentos em Brasília-DF',
   },
+  analytics: { gaId: '', gtmId: '' },
   inicio: {
     especialidade: 'Filmmaker de casamentos',
     frase: 'O seu casamento contado com a emoção e a estética de um filme de cinema.',
