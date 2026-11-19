@@ -16,11 +16,11 @@ import { filmesFallback } from '../data/filmes'
 import { iniciais } from '../lib/format'
 import {
   DESCRICAO_SEO_PADRAO,
-  TITULO_SEO_PADRAO,
   breadcrumbJsonLd,
   dadosNegocioJsonLd,
   faqJsonLd,
   imagemSocial,
+  tituloSeoDaVitrine,
   urlDoSite,
 } from '../lib/seo'
 import {
@@ -28,6 +28,7 @@ import {
   linkWhatsapp,
   marcaDoSite,
   rotuloPreco,
+  urlRetratoSobre,
 } from '../lib/vitrine'
 
 const dados = await buscarVitrine()
@@ -68,14 +69,17 @@ const instagramUrl =
   dados.contato?.instagram?.url?.trim() ||
   (instagramUsuario ? `https://www.instagram.com/${instagramUsuario}/` : '')
 const monograma = iniciais(marca)
+const retratoSobre = urlRetratoSobre(dados)
 const filmes = dados.filmes?.length ? dados.filmes : filmesFallback
 const slugTenant = dados.tenant?.slug?.trim() || 'maicon-jose'
-const tituloSeo = TITULO_SEO_PADRAO
+const tituloSeo = tituloSeoDaVitrine(dados)
 const paragrafosSobre = sobreTexto.split(/\n\n+/).map((p) => p.trim()).filter(Boolean)
 const youtubeUrl = dados.contato?.youtube?.url?.trim() || ''
 const youtubeRotulo = dados.contato?.youtube?.rotulo?.trim() || 'Mayck Filmes'
 const temAgenda = agendaTemMeses(dados.agenda)
 const og = imagemSocial(dados)
+const gaId = dados.analytics?.gaId?.trim() || ''
+const gtmId = dados.analytics?.gtmId?.trim() || ''
 const dadosEstruturados = [
   dadosNegocioJsonLd(dados, `${urlDoSite()}/`),
   faqJsonLd(faq.map((f) => ({ pergunta: f.pergunta, resposta: f.resposta }))),
@@ -89,6 +93,11 @@ const dadosEstruturados = [
   imagemOg={og}
   caminhoCanonico="/"
   dadosEstruturados={dadosEstruturados}
+  marcaSite={marca}
+  cidade={dados.identidade?.cidade || 'Brasília'}
+  uf={dados.identidade?.uf || 'DF'}
+  gaId={gaId}
+  gtmId={gtmId}
 >
   <Menu marca={marca} especialidade={especialidade} pagina="inicio" />
 
@@ -141,7 +150,22 @@ const dadosEstruturados = [
 
     <section class="sobre" id="sobre">
       <div class="container sobre__grid">
-        <div class="sobre__retrato revelar" aria-hidden="true">{monograma}</div>
+        <div class="sobre__retrato revelar">
+          {
+            retratoSobre ? (
+              <img
+                src={retratoSobre}
+                alt={`Retrato — ${marca}`}
+                width="720"
+                height="900"
+                loading="lazy"
+                decoding="async"
+              />
+            ) : (
+              <span aria-hidden="true">{monograma}</span>
+            )
+          }
+        </div>
         <div class="sobre__texto">
           <p class="rotulo revelar">Sobre</p>
           <h2 class="titulo-secao revelar">{sobreTitulo}</h2>
