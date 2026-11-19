@@ -1,0 +1,462 @@
+  margin: 1.75rem 0 0;
+  font-size: 0.85rem;
+  color: var(--cinza);
+}
+
+/* —— Agenda (meses) —— */
+.agenda-meses {
+  padding: 6rem 0 4rem;
+  background: var(--noite);
+}
+
+.agenda-meses .rotulo,
+.agenda-meses .titulo-secao {
+  text-align: center;
+}
+
+.agenda-meses__legenda {
+  list-style: none;
+  margin: 0 0 2.5rem;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem 1.5rem;
+}
+
+.agenda-meses__legenda li {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--cinza);
+}
+
+.agenda-meses__anos {
+  display: grid;
+  gap: 3rem;
+}
+
+.agenda-ano__titulo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0 0 1.25rem;
+  font-family: var(--serif);
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  font-weight: 500;
+  color: var(--creme);
+}
+
+.agenda-ano__titulo span {
+  flex: 1;
+  height: 1px;
+  background: color-mix(in srgb, var(--ouro) 28%, transparent);
+}
+
+.agenda-ano__grade {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(2, 1fr);
+  background: color-mix(in srgb, var(--ouro) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ouro) 18%, transparent);
+}
+
+@media (width >= 40rem) {
+  .agenda-ano__grade {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (width >= 64rem) {
+  .agenda-ano__grade {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.agenda-mes {
+  background: var(--noite-suave);
+}
+
+.agenda-mes > a,
+.agenda-mes > div {
+  display: flex;
+  flex-direction: column;
+  min-height: 7.5rem;
+  padding: 1.15rem 1rem 1.25rem;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.2s ease;
+}
+
+.agenda-mes > a:hover {
+  background: color-mix(in srgb, var(--ouro) 8%, var(--noite-suave));
+}
+
+.agenda-mes__nome {
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.agenda-mes[data-estado='esgotado'] .agenda-mes__nome {
+  text-decoration: line-through;
+  color: var(--cinza);
+}
+
+.agenda-mes[data-estado='encerrado'] .agenda-mes__nome {
+  color: color-mix(in srgb, var(--cinza) 70%, transparent);
+}
+
+.agenda-mes__estado {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.65rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cinza);
+}
+
+.agenda-mes__cta {
+  margin-top: auto;
+  padding-top: 0.85rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ouro);
+  opacity: 0.75;
+}
+
+.agenda-mes > a:hover .agenda-mes__cta {
+  opacity: 1;
+}
+
+.marca-agenda {
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.55rem;
+  flex: none;
+  border: 1px solid var(--cinza);
+  border-radius: 999px;
+}
+
+.marca-agenda[data-estado='disponivel'] {
+  border-color: var(--ouro);
+  background: var(--ouro);
+}
+
+.marca-agenda[data-estado='poucas-datas'] {
+  border-color: var(--ouro);
+  background: linear-gradient(90deg, var(--ouro) 50%, transparent 50%);
+}
+
+.marca-agenda[data-estado='esgotado'] {
+  border-radius: 0;
+  border-width: 0;
+  height: 1px;
+  width: 0.7rem;
+  background: var(--cinza);
+}
+
+.marca-agenda[data-estado='encerrado'] {
+  opacity: 0.4;
+}
+
+.agenda-vazia {
+  padding: 7.5rem 0 3rem;
+  text-align: center;
+}
+
+.form-contato {
+  display: grid;
+  gap: 1.35rem;
+  padding: 1.75rem 1.4rem 1.5rem;
+  background: var(--noite-suave);
+  border: 1px solid color-mix(in srgb, var(--ouro) 16%, transparent);
+}
+
+.form-contato__grade {
+  display: grid;
+  gap: 1.35rem;
+}
+
+@media (width >= 40rem) {
+  .form-contato__grade {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.form-contato__campo {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.form-contato__campo label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--cinza);
+}
+
+.form-contato__campo input,
+.form-contato__campo select,
+.form-contato__campo textarea {
+  width: 100%;
+  margin: 0;
+  padding: 0.75rem 0;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--ouro) 28%, transparent);
+  border-radius: 0;
+  background: transparent;
+  color: var(--creme);
+  font: inherit;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.form-contato__campo input::placeholder,
+.form-contato__campo textarea::placeholder {
+  color: color-mix(in srgb, var(--cinza) 80%, transparent);
+}
+
+.form-contato__campo input:focus,
+.form-contato__campo select:focus,
+.form-contato__campo textarea:focus {
+  border-bottom-color: var(--ouro);
+}
+
+.form-contato__campo select {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--ouro) 50%),
+    linear-gradient(135deg, var(--ouro) 50%, transparent 50%);
+  background-position:
+    calc(100% - 12px) 55%,
+    calc(100% - 7px) 55%;
+  background-size:
+    5px 5px,
+    5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 1.5rem;
+}
+
+.form-contato__campo select option {
+  background: var(--noite-suave);
+  color: var(--creme);
+}
+
+.form-contato__campo textarea {
+  resize: vertical;
+  min-height: 6rem;
+}
+
+.form-contato__erro {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #e8a0a0;
+}
+
+.form-contato__erro[hidden] {
+  display: none;
+}
+
+.form-contato__enviar {
+  justify-self: start;
+  margin-top: 0.35rem;
+}
+
+/* —— CTA final (arquivo /filmes) —— */
+.cta-final {
+  padding: 5.5rem 0;
+  text-align: center;
+  background:
+    radial-gradient(ellipse 50% 60% at 50% 40%, rgba(197, 153, 75, 0.14), transparent 65%),
+    var(--noite);
+}
+
+.cta-final .titulo-secao {
+  margin-bottom: 0.75rem;
+}
+
+.cta-final .lead {
+  margin-bottom: 2rem;
+}
+
+.cta-final__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  justify-content: center;
+}
+
+/* —— Rodapé —— */
+.rodape {
+  padding: 2.5rem var(--pad) 2rem;
+  background: var(--noite-profunda);
+  border-top: 1px solid color-mix(in srgb, var(--ouro) 14%, transparent);
+  text-align: center;
+}
+
+.rodape__marca {
+  margin: 0 0 0.5rem;
+  font-family: var(--serif);
+  font-size: 1.35rem;
+  letter-spacing: 0.12em;
+}
+
+.rodape__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin: 1rem 0 1.5rem;
+}
+
+.rodape__links a {
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--cinza);
+}
+
+.rodape__links a:hover {
+  color: var(--ouro-claro);
+}
+
+.rodape__credito {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--cinza);
+}
+
+.rodape__credito a {
+  color: var(--cinza-claro);
+  text-underline-offset: 0.18em;
+}
+
+.rodape__credito a:hover {
+  color: var(--ouro-claro);
+}
+
+/* —— Flutuantes (herdados do template) —— */
+.flutuante-wa {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 2.75rem;
+  padding: 0.65rem 1.1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #052012;
+  background: var(--wa);
+  transition:
+    opacity 0.45s ease,
+    translate 0.45s ease,
+    filter 0.25s ease;
+}
+
+.flutuante-wa:hover {
+  filter: brightness(1.05);
+}
+
+.flutuante-wa__icone {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+.flutuante-topo {
+  position: fixed;
+  left: 1rem;
+  bottom: 1rem;
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 0;
+  border-radius: 999px;
+  color: var(--noite);
+  background: var(--ouro);
+  cursor: pointer;
+  transition:
+    opacity 0.45s ease,
+    translate 0.45s ease,
+    filter 0.25s ease;
+}
+
+.flutuante-topo:hover {
+  filter: brightness(1.05);
+}
+
+.flutuante-topo svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+@media (width <= 359px) {
+  .flutuante-wa {
+    width: 2.75rem;
+    padding: 0;
+  }
+
+  .flutuante-wa__texto {
+    display: none;
+  }
+}
+
+@media (width >= 48rem) {
+  .flutuante-wa,
+  .flutuante-topo {
+    bottom: 2rem;
+  }
+
+  .flutuante-wa {
+    right: 2rem;
+  }
+
+  .flutuante-topo {
+    left: 2rem;
+  }
+}
+
+html.js .flutuante-wa:not([data-visivel]),
+html.js .flutuante-topo:not([data-visivel]) {
+  opacity: 0;
+  translate: 0 0.6rem;
+  pointer-events: none;
+}
+
+/* Abaixo da dobra: pula layout/paint até entrar na viewport. */
+.filmes,
+.verticais,
+.sobre,
+.processo,
+.diferenciais,
+.pacotes,
+.depoimentos,
+.faq,
+.contato,
+.agenda-faixa,
+.arquivo-masonry {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 720px;
+}
