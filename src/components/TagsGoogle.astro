@@ -1,0 +1,83 @@
+---
+/**
+ * GA4 / GTM com Consent Mode (mesma ideia do tema plataforma).
+ * IDs vêm da vitrine (Configurações → Google Analytics).
+ */
+type Props = {
+  onde: 'head' | 'body'
+  gaId?: string
+  gtmId?: string
+}
+
+const { onde, gaId: gaBruto = '', gtmId: gtmBruto = '' } = Astro.props
+const gaId = /^G-[A-Z0-9]+$/.test(gaBruto) ? gaBruto : ''
+const gtmId = /^GTM-[A-Z0-9]+$/.test(gtmBruto) ? gtmBruto : ''
+const ativo = Boolean(gaId || gtmId)
+const chave = JSON.stringify('mayck-consentimento-analytics')
+const gaJson = JSON.stringify(gaId)
+const gtmJson = JSON.stringify(gtmId)
+---
+
+{
+  ativo && onde === 'head' ? (
+    <>
+      <script
+        is:inline
+        data-cfasync="false"
+        set:html={`
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',wait_for_update:2000});
+        try{if(localStorage.getItem(${chave})==='aceito'){gtag('consent','update',{analytics_storage:'granted'});}}catch(e){}
+      `}
+      />
+      <script
+        is:inline
+        data-cfasync="false"
+        set:html={`
+        (function(gaId,gtmId){
+          function instalar(){
+            if(window.__tagsGoogleCarregadas) return;
+            window.__tagsGoogleCarregadas=true;
+            if(gtmId){
+              (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});
+                var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
+                j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
+                j.setAttribute('data-cfasync','false');
+                f.parentNode.insertBefore(j,f);
+              })(window,document,'script','dataLayer',gtmId);
+            }
+            if(gaId){
+              var s=document.createElement('script');
+              s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id='+gaId;
+              s.setAttribute('data-cfasync','false');
+              s.onload=function(){gtag('js',new Date());gtag('config',gaId);};
+              document.head.appendChild(s);
+            }
+          }
+          function agendar(){
+            if('requestIdleCallback' in window) requestIdleCallback(instalar,{timeout:2500});
+            else setTimeout(instalar,1);
+          }
+          if(document.readyState==='complete') agendar();
+          else window.addEventListener('load',agendar,{once:true});
+        })(${gaJson},${gtmJson});
+      `}
+      />
+    </>
+  ) : null
+}
+
+{
+  ativo && onde === 'body' && gtmId ? (
+    <noscript>
+      <iframe
+        src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
+        height="0"
+        width="0"
+        style="display:none;visibility:hidden"
+        title="Google Tag Manager"
+      />
+    </noscript>
+  ) : null
+}

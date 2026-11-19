@@ -1,0 +1,146 @@
+---
+/**
+ * Aviso LGPD de cookies — só aparece se houver GA/GTM na vitrine.
+ */
+type Props = {
+  gaId?: string
+  gtmId?: string
+}
+
+const { gaId: gaBruto = '', gtmId: gtmBruto = '' } = Astro.props
+const gaId = /^G-[A-Z0-9]+$/.test(gaBruto) ? gaBruto : ''
+const gtmId = /^GTM-[A-Z0-9]+$/.test(gtmBruto) ? gtmBruto : ''
+const ativo = Boolean(gaId || gtmId)
+---
+
+{
+  ativo ? (
+    <div
+      class="consentimento"
+      role="dialog"
+      aria-labelledby="consentimento-titulo"
+      aria-describedby="consentimento-texto"
+      data-consentimento
+      hidden
+    >
+      <p id="consentimento-titulo" class="consentimento__rotulo">Privacidade</p>
+      <p id="consentimento-texto" class="consentimento__texto">
+        Usamos cookies de análise do Google para entender como o site é visitado. Eles só são ativados se você
+        aceitar.
+      </p>
+      <div class="consentimento__acoes">
+        <button type="button" class="btn btn--ouro" data-consentir="aceito">
+          Aceitar
+        </button>
+        <button type="button" class="btn btn--linha" data-consentir="recusado">
+          Recusar
+        </button>
+      </div>
+    </div>
+  ) : null
+}
+
+{
+  ativo ? (
+    <script>
+      const CHAVE = 'mayck-consentimento-analytics'
+      const aviso = document.querySelector<HTMLElement>('[data-consentimento]')
+      if (aviso) {
+        window.dataLayer = window.dataLayer ?? []
+        window.gtag =
+          window.gtag ??
+          function gtag() {
+            window.dataLayer!.push(arguments)
+          }
+
+        function conceder() {
+          window.gtag!('consent', 'update', { analytics_storage: 'granted' })
+        }
+
+        function decidir(valor: 'aceito' | 'recusado') {
+          try {
+            localStorage.setItem(CHAVE, valor)
+          } catch {
+            /* ignore */
+          }
+          aviso.hidden = true
+          if (valor === 'aceito') conceder()
+          else window.gtag!('consent', 'update', { analytics_storage: 'denied' })
+        }
+
+        aviso.querySelectorAll<HTMLButtonElement>('[data-consentir]').forEach((botao) => {
+          botao.addEventListener('click', () => {
+            const valor = botao.dataset.consentir
+            if (valor === 'aceito' || valor === 'recusado') decidir(valor)
+          })
+        })
+
+        let salvo: string | null = null
+        try {
+          salvo = localStorage.getItem(CHAVE)
+        } catch {
+          salvo = null
+        }
+        if (salvo === 'aceito') {
+          conceder()
+          aviso.hidden = true
+        } else if (salvo === 'recusado') {
+          aviso.hidden = true
+        } else {
+          aviso.hidden = false
+        }
+      }
+    </script>
+  ) : null
+}
+
+<style is:global>
+  .consentimento {
+    position: fixed;
+    z-index: 60;
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    max-width: 26rem;
+    padding: 1.25rem 1.35rem;
+    background: var(--noite-suave);
+    border: 1px solid color-mix(in srgb, var(--ouro) 28%, transparent);
+    color: var(--creme);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+  }
+
+  @media (width >= 48rem) {
+    .consentimento {
+      left: 2rem;
+      right: auto;
+      bottom: 2rem;
+    }
+  }
+
+  .consentimento__rotulo {
+    margin: 0;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ouro);
+  }
+
+  .consentimento__texto {
+    margin: 0.75rem 0 1rem;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--cinza-claro);
+  }
+
+  .consentimento__acoes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.65rem;
+  }
+
+  .consentimento__acoes .btn {
+    min-height: 2.5rem;
+    padding: 0.55rem 0.75rem;
+    font-size: 0.7rem;
+  }
+</style>

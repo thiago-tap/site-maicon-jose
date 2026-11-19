@@ -27,8 +27,34 @@ export const DESCRICAO_SEO_PADRAO =
 
 export const TITULO_SEO_PADRAO = 'Mayck Filmes | Filmmaker de Casamentos em Brasília-DF'
 
-/** Imagem de compartilhamento: capa do filme destaque ou thumb YouTube. */
+/** Title da aba: painel (`tituloSeo`) → montagem → fallback. */
+export function tituloSeoDaVitrine(dados: Vitrine): string {
+  const direto = dados.identidade?.tituloSeo?.trim()
+  if (direto) return truncarMeta(direto, 70)
+
+  const nome =
+    dados.identidade?.nome?.trim() ||
+    dados.identidade?.nomeDoSite?.trim() ||
+    'Mayck Filmes'
+  const especialidade =
+    dados.inicio?.especialidade?.trim() ||
+    dados.identidade?.especialidade?.trim() ||
+    'Filmmaker de casamentos'
+  const lugar = [dados.identidade?.cidade?.trim(), dados.identidade?.uf?.trim()]
+    .filter(Boolean)
+    .join('-')
+  const montado = lugar ? `${nome} | ${especialidade} em ${lugar}` : `${nome} | ${especialidade}`
+  return truncarMeta(montado, 70) || TITULO_SEO_PADRAO
+}
+
+/** Imagem de compartilhamento: OG do painel → capa do destaque → thumb YouTube. */
 export function imagemSocial(dados: Vitrine): string | undefined {
+  const social =
+    dados.marca?.imagemSocial?.fontesAoVivo?.computador?.src ||
+    dados.marca?.imagemSocial?.fontesAoVivo?.base?.src ||
+    (dados.marca?.imagemSocial?.url?.startsWith('https://') ? dados.marca.imagemSocial.url : undefined)
+  if (social) return social
+
   const filmes = dados.filmes || []
   const destaque = filmes.find((f) => f.destaque) || filmes[0]
   if (!destaque) return undefined
@@ -43,6 +69,7 @@ export function imagemSocial(dados: Vitrine): string | undefined {
 
 export function dadosNegocioJsonLd(dados: Vitrine, paginaUrl: string) {
   const nome =
+    dados.identidade?.nome?.trim() ||
     dados.identidade?.nomeDoSite?.trim() ||
     dados.identidade?.fotografo?.trim() ||
     'Mayck Filmes'
