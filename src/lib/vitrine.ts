@@ -6,6 +6,9 @@ import type { AgendaVitrine } from './agenda'
 export type Vitrine = {
   tenant?: { slug?: string; nome?: string; url?: string }
   identidade?: {
+    /** Contrato da vitrine (painel). */
+    nome?: string
+    /** Alias legado / fallback local. */
     nomeDoSite?: string
     primeiroNome?: string
     fotografo?: string
@@ -15,6 +18,17 @@ export type Vitrine = {
     cidade?: string
     uf?: string
     descricao?: string
+    tituloSeo?: string
+  }
+  analytics?: { gaId?: string; gtmId?: string }
+  marca?: {
+    monograma?: { url?: string; fontesAoVivo?: { base?: { src: string }; computador?: { src: string } } }
+    imagemSocial?: { url?: string; fontesAoVivo?: { base?: { src: string }; computador?: { src: string } } }
+  }
+  fotos?: {
+    'sobre-retrato'?: {
+      imagem?: { url?: string; fontesAoVivo?: { base?: { src: string }; computador?: { src: string } } }
+    }
   }
   inicio?: {
     especialidade?: string
@@ -277,9 +291,29 @@ export function rotuloPreco(valor?: number | null): string {
 
 export function marcaDoSite(dados: Vitrine): string {
   return (
+    dados.identidade?.nome?.trim() ||
     dados.identidade?.nomeDoSite?.trim() ||
     dados.identidade?.fotografo?.trim() ||
     dados.identidade?.primeiroNome?.trim() ||
     'Mayck Filmes'
+  )
+}
+
+/** URL pública de imagem da vitrine (fontesAoVivo ou url http). */
+export function urlMidiaVitrine(foto?: {
+  url?: string
+  fontesAoVivo?: { base?: { src: string }; computador?: { src: string } }
+}): string | undefined {
+  const aoVivo = foto?.fontesAoVivo?.computador?.src || foto?.fontesAoVivo?.base?.src
+  if (aoVivo?.startsWith('https://')) return aoVivo
+  const url = foto?.url?.trim()
+  if (url && url !== '.' && url.startsWith('https://')) return url
+  return undefined
+}
+
+export function urlRetratoSobre(dados: Vitrine): string | undefined {
+  return (
+    urlMidiaVitrine(dados.fotos?.['sobre-retrato']?.imagem) ||
+    urlMidiaVitrine(dados.marca?.monograma)
   )
 }
